@@ -2,7 +2,7 @@
 
 to.filter <- c()#
 
-east <- read.csv("./input/Eastern_Europe.csv")
+east <- read.csv(paste0(input.path,"./input/Eastern_Europe.csv"))
 countries.east <- unique(east$NUTS2016_0)
 
 ###### prepare Y
@@ -24,7 +24,7 @@ finalres <- NULL
 for(iii in 1:length(specs)){
 
   to.filter <- specs[[iii]]
-  
+
 dummy.OLS <- as.data.frame(shape) %>% left_join(Y) %>% filter(!typ%in%to.filter) %>% mutate(MOUNT_TYPE=ifelse(MOUNT_TYPE==4,0,1), COAST_TYPE=ifelse(COAST_TYPE==3,0,1), east=ifelse(substr(NUTS_ID,1,2)%in%c(countries.east),1,0), nordic=ifelse(substr(NUTS_ID,1,2)%in%c("NO","SE", "FI"),1,0), typ=as.factor(typ), country=as.factor(substr(NUTS_ID,1,2))) %>% arrange(NUTS_ID)
 
 ### additional dummies

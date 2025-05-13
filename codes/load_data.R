@@ -32,7 +32,7 @@ pop$change_corr <- pop$pop2021.corr-pop$pop2011
 
 ########### migration
 
-mig <- read.csv("./input/nuts3_migration_2016.csv")
+mig <- read.csv(paste0(input.path,"./input/nuts3_migration_2016.csv"))
 mig <- mig %>% pivot_longer(cols = -NUTS_ID, names_to = "year", values_to = "value")
 mig <- mig %>% group_by(NUTS_ID) %>% summarise(avg.mig=mean(value, na.rm = T))
 
@@ -131,7 +131,7 @@ saveRDS(final, file="output/predictors.rds")
 
 
 
-NUTS_shape <- st_read("../NUTS/NUTS_RG_20M_2016_3035.shp")
+NUTS_shape <- st_read(paste0(input.path,"/input/NUTS/NUTS_RG_20M_2016_3035.shp"))
 NUTS_shape <- NUTS_shape %>% filter(NUTS_ID%in%unique(pop$NUTS_ID))
 
 saveRDS(NUTS_shape, file="output/final_NUTS.rds")

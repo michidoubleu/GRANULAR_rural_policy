@@ -8,11 +8,10 @@ library(spam)
 library(Matrix)
 library(pracma)
 # Fast logdet approximation function
-source("./lndetPaceBarry.R")
 
 ### first let's construct our SAR DGP
 # contains function to contruct n-nearest neighbour spatial weight matrix
-source("knn.R")
+
 # n=1155
 # smallk = 3
 # # 7 nearest neighbour W construction from random pattern
@@ -27,15 +26,15 @@ source("knn.R")
 # SIGMA = 1
 # AI_ = solve(diag(n) - RHO * W)
 # Y = AI_ %*% (X.full %*%  BETA + rnorm(n, mean = 0,sd = SIGMA) )
-# 
+#
 # # DIRECT = sum(diag(AI_))/n * BETA[1:4] + c(0,sum(diag(AI_ %*% W))/n * BETA[5:7])
 # # TOTAL = sum(AI_)/n * BETA[1:4] + c(0,sum(AI_ %*% W)/n * BETA[5:7])
 # # INDIRECT =TOTAL - DIRECT
-# 
+#
 # k = 7
-# 
+#
 # test <- SDM_SSVS(Y,X,W)
-# 
+#
 # tt = 1
 # niter = 200
 # nretain = 100
@@ -71,20 +70,20 @@ SDM_SSVS = function(Y,X,W,Z = NULL,tt = 1,
     smallk2 = smallk * 2 + 1
   }
   k = ncol(X)
-  
+
   ### let us assign prior values
   # beta mean and variance are proper, but with high variance (= low prior information)
   beta_prior_mean = matrix(0,k,1)
   beta_prior_var = diag(k) * A0
-  # rho prior is beta, with 
+  # rho prior is beta, with
   beta_prob = function(rho,a) 1/beta(a,a) * ((1+rho)^(a-1) *(1-rho)^(a-1))/(2^(2*a - 1))
-  
-  
+
+
   ### calibration parameters for rho sampling
   cc = 1 #scaling of rho proposals
   c_adjust = 1.1 #proposal distribution adjustment
   rho_accept = 0 #counter for rho acceptance rates
-  
+
   ### set-up the gibbs sampler
   # total number of draws
   ndiscard = niter - nretain
@@ -97,13 +96,13 @@ SDM_SSVS = function(Y,X,W,Z = NULL,tt = 1,
   post.direct = matrix(0,smallk + 1,nretain)
   post.indirect = matrix(0,smallk + 1,nretain)
   post.total = matrix(0,smallk + 1,nretain)
-  dimnames(post.direct)[[1]] = 
-    dimnames(post.indirect)[[1]] = 
+  dimnames(post.direct)[[1]] =
+    dimnames(post.indirect)[[1]] =
     dimnames(post.total)[[1]] = xnames
-  
+
   tY = matrix(Y,n,tt)
   WY = matrix((W %*% tY),n*tt,1)
-  
+
   # Make the semi-automatic choices of "small" and "large" prior variances
   # as recommended by George, Sun and Ni (2008, JOE)
   # This uses OLS so will not work if bigk>nobs
@@ -113,17 +112,17 @@ SDM_SSVS = function(Y,X,W,Z = NULL,tt = 1,
   s2_ols = as.double(crossprod(Y- OLSX %*% b_ols)/(n - k-1))
   b_cov = s2_ols*xtxinv;
   b_sd = sqrt(diag(b_cov));
-  
+
   #prior hyperparameters
   ssvs_constant = 5
   c0 = 1/ssvs_constant
   c1 = ssvs_constant
   tau0 = c0*b_sd[-1]
   tau1 = c1*b_sd[-1]
-  
+
   #ssvs.w = rep(0.5,k) #prior inclusion probability
   #ssvs.w[1] = 1 # always include the intercept
-  
+
   # set-up for griddy gibbs
   griddy_n = 100
   logdets = lndetPaceBarry(as.matrix(W),length.out = griddy_n+2)
@@ -144,25 +143,25 @@ SDM_SSVS = function(Y,X,W,Z = NULL,tt = 1,
     aiW_tots[ii] = sum(AI %*% W)
   }
   cat("Done!\n")
-  
+
   # starting values (won't matter after sufficient draws)
   curr.beta = b_ols[-1]
   curr.sigma = s2_ols
   curr.rho = 0
   curr.gamma = rep(1,k)
-  
+
   # pre-calculate some terms for faster draws
   #beta_prior_var_inv = solve(beta_prior_var)
   XpX = t(X) %*% X
   curr.Ay = Y - curr.rho*WY
   V.prior <- diag(curr.gamma)
-  
+
   ### Gibbs sampling
   pb <- txtProgressBar(min = 0, max = niter, style = 3)
   iter <- 1
   for (iter in 1:niter) {
     #cat("iter:",iter,"curr.rho:",curr.rho,"\n")
-    
+
     # # sampling mixture component curr.gamma
     j <- 3
     for (j in 1:k){
@@ -178,20 +177,20 @@ SDM_SSVS = function(Y,X,W,Z = NULL,tt = 1,
         curr.gamma[j] <- 0
       }
     }
-    
-    
+
+
     # draw beta
     #V = solve(beta_prior_var_inv + 1/curr.sigma * XpX )
     #b = V %*% (beta_prior_var_inv%*%beta_prior_mean + 1/curr.sigma * t(X) %*% curr.Ay )
     V = solve(diag(1/diag(V.prior)) + 1/curr.sigma * XpX )
     b = V %*% (1/curr.sigma * t(X) %*% curr.Ay )
     curr.beta = mvrnorm(1,b,V)
-    
+
     # draw sigma
     curr.xb = X %*% curr.beta
     curr.ESS = crossprod(curr.Ay - curr.xb)
     curr.sigma = 1/rgamma(1, sigma_a + (n*tt)/2, sigma_b + as.double(curr.ESS) / 2)
-    
+
     ## Griddy-Gibbs step for rho
     V = solve(diag(1/diag(V.prior)) + 1/curr.sigma * XpX )
     b0 = V %*% (1/curr.sigma * t(X) %*% Y )
@@ -215,30 +214,30 @@ SDM_SSVS = function(Y,X,W,Z = NULL,tt = 1,
     ind = max(which(den <= rnd))
     if (is.integer(ind) && ind <= length(rrhos)) {
       curr.rho = rrhos[ind]
-      curr.Ay = Y - curr.rho*WY 
+      curr.Ay = Y - curr.rho*WY
       curr.ai_diag = ai_diags[ind]
       curr.ai_tot = ai_tots[ind]
       curr.aiW_diag = aiW_diags[ind]
       curr.aiW_tot = aiW_tots[ind]
     }
-    
+
     # ## Metropolis-Hastings step for rho
     # # logdet calculation costly, so do it as few times as possible
     # if (iter == 1) {curr.logdet = log(det(diag(n) - curr.rho*W))}
     # curr.llh = curr.logdet - as.double(curr.ESS)/ (2*curr.sigma) + beta_prob(curr.rho,rho_a)
-    # accept = 0; 
+    # accept = 0;
     # while (accept!=1) {
-    #   prop.rho = curr.rho + cc*rnorm(1,0,1) 
+    #   prop.rho = curr.rho + cc*rnorm(1,0,1)
     #   if (prop.rho<1 && prop.rho>-1) {
-    #     accept = 1 
+    #     accept = 1
     #   }
-    # }    
+    # }
     # prop.Ay = Y - prop.rho*WY
     # prop.ESS = t(prop.Ay - curr.xb) %*% (prop.Ay - curr.xb)
     # prop.logdet = log(det(diag(n) - prop.rho*W))
     # prop.llh =  prop.logdet - as.double(prop.ESS)/ (2*curr.sigma) + beta_prob(prop.rho,rho_a)
     # acc_prob = min(1,exp(prop.llh - curr.llh))
-    # if (rbinom(1,1,acc_prob) == 1) {      
+    # if (rbinom(1,1,acc_prob) == 1) {
     #   curr.rho = prop.rho
     #   rho_accept = rho_accept + 1
     #   curr.logdet = prop.logdet
@@ -253,7 +252,7 @@ SDM_SSVS = function(Y,X,W,Z = NULL,tt = 1,
     #     cc <- cc*c_adjust
     #   }
     # }
-    
+
     # we are past the burn-in, save the draws
     if (iter > ndiscard) {
       s = iter - ndiscard
@@ -261,16 +260,16 @@ SDM_SSVS = function(Y,X,W,Z = NULL,tt = 1,
       postg[,s] = as.matrix(curr.gamma)
       posts[s] = curr.sigma
       postr[s] = curr.rho
-      
+
       # # calculate summary spatial effects
       # if (!is.null(origX)) {
-      #   post.direct[,s] = curr.ai_diag/n * curr.beta[1:(smallk + 1)] + 
+      #   post.direct[,s] = curr.ai_diag/n * curr.beta[1:(smallk + 1)] +
       #                   c(0,curr.aiW_diag/n * curr.beta[(smallk + 2):smallk2] )
-      #   post.total[,s] = curr.ai_tot/n * curr.beta[1:(smallk + 1)] + 
+      #   post.total[,s] = curr.ai_tot/n * curr.beta[1:(smallk + 1)] +
       #                  c(0,curr.aiW_tot/n * curr.beta[(smallk + 2):smallk2] )
       # } else {
-      #   post.direct[,s] = curr.ai_diag/n * curr.beta[1:(smallk + 1)] 
-      #   post.total[,s] = curr.ai_tot/n * curr.beta[1:(smallk + 1)] 
+      #   post.direct[,s] = curr.ai_diag/n * curr.beta[1:(smallk + 1)]
+      #   post.total[,s] = curr.ai_tot/n * curr.beta[1:(smallk + 1)]
       # }
       # post.indirect[,s] = post.total[,s] - post.direct[,s]
       #AI = solve(diag(n) - curr.rho * W)
@@ -285,7 +284,7 @@ SDM_SSVS = function(Y,X,W,Z = NULL,tt = 1,
   }
   close(pb)
   return(list(postb = postb,postg = postg,posts = posts, postr=postr,
-              post.direct = post.direct,post.indirect = post.indirect))  
+              post.direct = post.direct,post.indirect = post.indirect))
 }
 
 
