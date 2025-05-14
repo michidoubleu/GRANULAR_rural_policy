@@ -6,11 +6,11 @@ library(xtable)
 finalres <- readRDS("output/finalres.rds")
 
 # Reshaping to wide format
-df_wide <- finalres %>% 
-  mutate(spec = recode(spec, "full" = "A", "no.urb" = "B", "rural" = "C"), 
+df_wide <- finalres %>%
+  mutate(spec = recode(spec, "full" = "A", "no.urb" = "B", "rural" = "C"),
          PIP = as.numeric(PIP), beta = as.numeric(beta)) %>%
   distinct() %>%  # Remove duplicates if any
-  pivot_wider(names_from = spec, values_from = c(PIP, beta), names_glue = "{spec}_{.value}") 
+  pivot_wider(names_from = spec, values_from = c(PIP, beta), names_glue = "{spec}_{.value}")
 
 
 variable_mapping <- c(
@@ -55,7 +55,45 @@ variable_mapping <- c(
   "W_rent"         = "W_Land_Rent",
   "W_tasmin_perc"  = "W_TempMin_change",
   "tasmin_perc"    = "TempMin_change",
-  "rho"            = "rho"
+  "AEP"            = "AEP",
+  "COOP"           = "COOP",
+  "COUP"           = "COUP",
+  "DECOUP"         = "DECOUP",
+  "DIV"            = "DIV",
+  "FOR"            = "FOR",
+  "GRD"            = "GRD",
+  "HC"             = "HC",
+  "LFA"            = "LFA",
+  "MARKET"         = "MARKET",
+  "MISC"           = "MISC",
+  "PC"             = "PC",
+  "N2K"            = "N2K",
+  "TA"             = "TA",
+  "EARLY"          = "EARLY",
+  "health_2020_n1" = "health_2020_n1",
+  "health_2020_n3" = "health_2020_n3",
+  "educ_2020_n1"   = "educ_2020_n1",
+  "emp_pc"         = "emp_pc",
+  "W_AEP"             = "W_AEP",
+  "W_COOP"            = "W_COOP",
+  "W_COUP"            = "W_COUP",
+  "W_DECOUP"          = "W_DECOUP",
+  "W_DIV"             = "W_DIV",
+  "W_FOR"             = "W_FOR",
+  "W_GRD"             = "W_GRD",
+  "W_HC"              = "W_HC",
+  "W_LFA"             = "W_LFA",
+  "W_MARKET"          = "W_MARKET",
+  "W_MISC"            = "W_MISC",
+  "W_PC"              = "W_PC",
+  "W_N2K"             = "W_N2K",
+  "W_TA"              = "W_TA",
+  "W_EARLY"           = "W_EARLY",
+  "W_health_2020_n1"  = "W_health_2020_n1",
+  "W_health_2020_n3"  = "W_health_2020_n3",
+  "W_educ_2020_n1"    = "W_educ_2020_n1",
+  "W_emp_pc"          = "W_emp_pc",
+  "rho"               = "rho"
 )
 
 df_wide$names <- variable_mapping[df_wide$names]

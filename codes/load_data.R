@@ -61,6 +61,31 @@ econ <- econ %>% dplyr::select(-year, -gdp)
 econ[,-1] <- log(econ[,-1]+1)
 
 
+
+
+
+#econ
+emp <- read.csv(paste0(input.path,"/input/Employment_per_capita_NUTS3.csv"))
+colnames(emp)[1] <- 'NUTS_ID'
+
+emp <- emp %>% filter(NUTS_ID %in%represented.nuts) %>%
+  group_by(NUTS_ID) %>%
+  summarise(across(everything(), mean, na.rm = TRUE))
+
+emp <- emp %>% dplyr::select(-LEVEL_ID, -X2021)
+colnames(emp)[2] <- "emp_pc"
+
+
+
+##### accessibility
+access <- read.csv(paste0(input.path,"/input/Health_and_educ_accessibility_NUTS3.csv"))[,-1]
+access <- access[,c(TRUE,grepl("2020",colnames(access))[-1])]
+
+access <- access %>% filter(NUTS_ID %in%represented.nuts) %>%
+  group_by(NUTS_ID) %>%
+  summarise(across(everything(), mean, na.rm = TRUE))
+
+
 #climate
 clim <- read.csv(paste0(input.path,"/input/EU_climate_NUTS0123_new.csv"))
 colnames(clim)[1] <- 'NUTS_ID'
@@ -103,7 +128,7 @@ rents <- rents %>%left_join(rents2) %>% filter(year %in% seq(2009,2013,1)) %>%
 esif <- read.csv(paste0(input.path,"/input/NUTS3_harm_ESIF_2024-06-10.csv"))
 
 esif <- esif %>% filter(geo %in%represented.nuts) %>%
-  group_by(geo) %>% pivot_wider(id_cols = c(geo,year), names_from = "Category", values_from = "values") %>%
+  group_by(geo) %>% pivot_wider(id_cols = c(geo,year), names_from = "Category", values_from = "values", values_fill = 0) %>%
   summarise(across(everything(), mean, na.rm = TRUE)) %>% dplyr::select(-year) %>% rename("NUTS_ID"="geo")
 colnames(esif) <- colnames(esif) <- c(
   "NUTS_ID",
@@ -114,17 +139,30 @@ colnames(esif) <- colnames(esif) <- c(
   "Brownfield",
   "EnergyConstr"
 )
-esif[,-1] <- log((esif[,-1]+1)/1000)
+esif[,-1] <- log((esif[,-1]+1))
 
 
-##### load dummies
 
-# esif <- data.frame(NUTS_ID=esif$NUTS_ID, esif=rowSums(esif[,-1], na.rm = T))
+CAP <- read.csv(paste0(input.path,"/input/CAPpayments_processed.csv"))
+
+CAP <- CAP %>% filter(geo %in%represented.nuts) %>%
+  group_by(geo) %>% pivot_wider(id_cols = c(geo), names_from = "type", values_from = "values", values_fill = 0) %>%
+  summarise(across(everything(), mean, na.rm = TRUE)) %>% rename("NUTS_ID"="geo")
+CAP[,-1] <- log(CAP[,-1]+1)
+
+
+
+
 
 
 #final <- econ %>% left_join(clim.level) %>% left_join(clim.perc)
-final <- econ %>% left_join(clim.fin) %>% left_join(rents) %>% left_join(esif)
+
+final <- econ %>% left_join(clim.fin) %>% left_join(rents)  %>% left_join(access) %>% left_join(emp) %>% left_join(esif) %>% left_join(CAP)
 final[is.na(final)] <- 0
+
+
+
+
 
 
 saveRDS(final, file="output/predictors.rds")

@@ -21,6 +21,7 @@ X <- explan %>% dplyr::select(NUTS_ID, all_of(vars.considered)) %>% arrange(NUTS
 specs <- list(full="",no.urb="predominantly urban", rural=c("predominantly urban", "intermediate"))
 
 finalres <- NULL
+iii <- 1
 for(iii in 1:length(specs)){
 
   to.filter <- specs[[iii]]
@@ -44,8 +45,8 @@ W<-getWknn(coords,5)
 
 curr.X <- model.matrix(OLS1)
 Y1 <- model.response(model.frame(OLS1))
-curr.X = scale(curr.X,scale = FALSE,center = TRUE)
-
+# curr.X = scale(curr.X,scale = FALSE,center = TRUE)
+curr.X <- as.matrix(curr.X)
 
 test <- SDM_SSVS(Y1,curr.X,W, curr.Z, niter = 2000, nretain = 1000)
 res1 <- data.frame(names=c("Intercept",colnames(curr.X),paste0("W_",colnames(curr.X)),colnames(curr.Z)), PIP=rowMeans(test$postg), beta=round(rowMeans(test$postb),5))
