@@ -1,11 +1,14 @@
-library(dplyr)
-library(tidyr)
+dir.create("output")
+dir.create("overleaf")
 
 ###### dependent variable
+
+### pop change and natural change
+
 pop <- read.csv(paste0(input.path,"/input/pop_NUTS3.csv"))
 colnames(pop) <- c("NUTS_ID", "c", "d", "country", "typ", "a", "b","pop2011","pop2021")
 
-problems <- c("TR", "AL", "UK", "IS", "RS", "MK", "ME", "LI", "CH")
+problems <- c("TR", "AL", "UK", "IS", "RS", "MK", "ME", "LI", "CH", "NO")
 
 pop <- pop %>% filter(!country %in% problems) %>% dplyr::select(NUTS_ID, typ, pop2011, pop2021)
 
@@ -27,10 +30,7 @@ pop$change_corr <- pop$pop2021.corr-pop$pop2011
 
 
 
-
-
-
-########### migration
+### migration
 
 mig <- read.csv(paste0(input.path,"./input/nuts3_migration_2016.csv"))
 mig <- mig %>% pivot_longer(cols = -NUTS_ID, names_to = "year", values_to = "value")
@@ -47,8 +47,15 @@ represented.nuts <- unique(pop$NUTS_ID)
 saveRDS(pop, file="output/popdata_prepared.rds")
 
 
+
+
+
 ####### independent variables
-#econ
+
+##### economic vars
+
+#gva
+
 econ <- read.csv(paste0(input.path,"/input/economic_data.csv"))[,-1]
 colnames(econ)[1] <- 'NUTS_ID'
 
@@ -56,15 +63,11 @@ econ <- econ %>% filter(NUTS_ID %in%represented.nuts) %>%
   group_by(NUTS_ID) %>%
   summarise(across(everything(), mean, na.rm = TRUE))
 
-econ <- econ %>% dplyr::select(-year, -gdp)
-
-econ[,-1] <- log(econ[,-1]+1)
+econ <- econ %>% dplyr::select(-year)
 
 
+#emp
 
-
-
-#econ
 emp <- read.csv(paste0(input.path,"/input/Employment_per_capita_NUTS3.csv"))
 colnames(emp)[1] <- 'NUTS_ID'
 
@@ -86,7 +89,9 @@ access <- access %>% filter(NUTS_ID %in%represented.nuts) %>%
   summarise(across(everything(), mean, na.rm = TRUE))
 
 
-#climate
+##### climate vars
+
+
 clim <- read.csv(paste0(input.path,"/input/EU_climate_NUTS0123_new.csv"))
 colnames(clim)[1] <- 'NUTS_ID'
 
@@ -112,7 +117,7 @@ clim.fin <- clim.perc[,c("NUTS_ID","tas_perc", "tasmax_perc", "tasmin_perc")]
 
 clim.fin <- clim.fin %>% left_join(clim.new %>% dplyr::select(NUTS_ID,pr, sfcWindmax) %>% mutate(pr=pr*1000))
 
-
+##### farm number/rents
 
 rents2 <- read.csv(paste0(input.path,"/input/fadn_rents_nuts2_2024-08-31.csv"))
 rents <- data.frame(NUTS_ID=represented.nuts, NUTS2=substr(represented.nuts,1,4))
@@ -121,8 +126,10 @@ rents <- rents %>%left_join(rents2) %>% filter(year %in% seq(2009,2013,1)) %>%
   dplyr::select(-NUTS2) %>%
   group_by(NUTS_ID) %>%
   summarise(across(everything(), mean, na.rm = TRUE)) %>% dplyr::select(-year) %>%
-  mutate(nr_farms=log(nr_farms+1), rent=log(rent+1))%>%
   dplyr::select(NUTS_ID,nr_farms, rent)
+
+
+##### policy vars
 
 
 esif <- read.csv(paste0(input.path,"/input/NUTS3_harm_ESIF_2024-06-10.csv"))
@@ -139,8 +146,6 @@ colnames(esif) <- colnames(esif) <- c(
   "Brownfield",
   "EnergyConstr"
 )
-esif[,-1] <- log((esif[,-1]+1))
-
 
 
 CAP <- read.csv(paste0(input.path,"/input/CAPpayments_processed.csv"))
@@ -148,29 +153,18 @@ CAP <- read.csv(paste0(input.path,"/input/CAPpayments_processed.csv"))
 CAP <- CAP %>% filter(geo %in%represented.nuts) %>%
   group_by(geo) %>% pivot_wider(id_cols = c(geo), names_from = "type", values_from = "values", values_fill = 0) %>%
   summarise(across(everything(), mean, na.rm = TRUE)) %>% rename("NUTS_ID"="geo")
-CAP[,-1] <- log(CAP[,-1]+1)
 
+##### final processing
 
-
-
-
-
-#final <- econ %>% left_join(clim.level) %>% left_join(clim.perc)
 
 final <- econ %>% left_join(clim.fin) %>% left_join(rents)  %>% left_join(access) %>% left_join(emp) %>% left_join(esif) %>% left_join(CAP)
 final[is.na(final)] <- 0
 
-
-
-
-
-
 saveRDS(final, file="output/predictors.rds")
-
-
 
 NUTS_shape <- st_read(paste0(input.path,"/input/NUTS/NUTS_RG_20M_2016_3035.shp"))
 NUTS_shape <- NUTS_shape %>% filter(NUTS_ID%in%unique(pop$NUTS_ID))
+
 
 saveRDS(NUTS_shape, file="output/final_NUTS.rds")
 
