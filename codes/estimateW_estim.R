@@ -4,7 +4,7 @@ args <- commandArgs(trailingOnly = TRUE)
 JOB <- ifelse(.Platform$GUI == "RStudio",test.scen, as.integer(args[[1]]))
 dir.create("output")
 
-param.grid <- readRDS("output/temp_grid.rds")
+load("input/temp_grid.RData")
 
 require(estimateW)
 library(dplyr)
@@ -14,11 +14,14 @@ library(spam)
 library(Matrix)
 library(pracma)
 library(MASS)
+library(sf)
+library(spdep)
 
 # Use the parameters
 job.params <- param.grid[JOB,]
 Y.spec <- job.params$Y.spec
 model <- job.params$model
+add.interaction <- job.params$add.interaction
 region.spec <- job.params$region.spec
 add.c.dummies <- job.params$add.c.dummies
 # Resolve sets to actual variables
@@ -29,19 +32,19 @@ source("codes/prepare_data.R")
 source("codes/knn.R")
 
 
-shape <- readRDS("output/final_NUTS.rds")
+shape <- readRDS("input/final_NUTS.rds")
 centroids <- st_centroid(shape %>% filter(NUTS_ID %in% Y.info$NUTS_ID))
 centroids <- centroids[match(Y.info$NUTS_ID, centroids$NUTS_ID), ]
 coords <- st_coordinates(centroids)
-W<-getWknn(coords,5)
+W<-getWknn(coords,10)
 
 if(model=="SDM"){
 res1 = sdm(Y,tt=1,X = X,Z = Z,W = W)
 }
 
-# if(model=="SLX"){
-#   res1 = slx(Y,tt=1,X = X,Z = Z,W = W)
-# }
+if(model=="SLX"){
+  res1 = slx(Y,tt=1,X = X,Z = Z,W = W)
+}
 
 if(model=="SAR"){
   Z <- as.matrix(bind_cols(X,Z))

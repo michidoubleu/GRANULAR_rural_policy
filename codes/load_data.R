@@ -44,7 +44,7 @@ pop <- pop %>% pivot_longer(cols = -c(NUTS_ID, typ), names_to = "variable", valu
 
 represented.nuts <- unique(pop$NUTS_ID)
 
-saveRDS(pop, file="output/popdata_prepared.rds")
+saveRDS(pop, file="input/popdata_prepared.rds")
 
 
 
@@ -154,18 +154,30 @@ CAP <- CAP %>% filter(geo %in%represented.nuts) %>%
   group_by(geo) %>% pivot_wider(id_cols = c(geo), names_from = "type", values_from = "values", values_fill = 0) %>%
   summarise(across(everything(), mean, na.rm = TRUE)) %>% rename("NUTS_ID"="geo")
 
+
+
+
+
 ##### final processing
 
 
 final <- econ %>% left_join(clim.fin) %>% left_join(rents)  %>% left_join(access) %>% left_join(emp) %>% left_join(esif) %>% left_join(CAP)
 final[is.na(final)] <- 0
 
-saveRDS(final, file="output/predictors.rds")
+saveRDS(final, file="input/predictors.rds")
+
+
+
+metro <- read.xlsx(paste0(input.path,"/input/Metro-regions-NUTS-2016.xlsx"), sheet = 2)
+
+metro <- metro %>% mutate(class=ifelse(substr(MREG_CODE,7,7)=="C","capital","STmetro"), value=1) %>% dplyr::select(NUTS_ID, class, value) %>% pivot_wider(id_cols = NUTS_ID, names_from = "class", values_fill = 0)
+
+
 
 NUTS_shape <- st_read(paste0(input.path,"/input/NUTS/NUTS_RG_20M_2016_3035.shp"))
-NUTS_shape <- NUTS_shape %>% filter(NUTS_ID%in%unique(pop$NUTS_ID))
+NUTS_shape <- NUTS_shape %>% filter(NUTS_ID%in%unique(pop$NUTS_ID)) %>% left_join(metro)
+NUTS_shape[is.na(NUTS_shape)] <- 0
 
-
-saveRDS(NUTS_shape, file="output/final_NUTS.rds")
+saveRDS(NUTS_shape, file="input/final_NUTS.rds")
 
 

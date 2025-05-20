@@ -1,7 +1,7 @@
 # Define your config file path
 config_path <- "config_estim.R"
 
-saveRDS(param.grid, file = "output/temp_grid.rds")
+save(param.grid,all.vars.considered,all.dummies.considered, file = "input/temp_grid.RData")
 
 # Define the current list of jobs
 current_jobs <- 1:nrow(param.grid)
@@ -18,5 +18,13 @@ config_lines <- gsub(
 
 # Write the updated config back to the file
 writeLines(config_lines, config_path)
+
+
+# Set the path to the folder
+folder_path <- "output"
+# List all files in the folder
+files_to_delete <- list.files(folder_path, full.names = TRUE)
+# Delete the files
+unlink(files_to_delete)
 
 
