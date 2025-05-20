@@ -4,7 +4,7 @@ library(ggplot2)
 
 
 
-pdf("model_tables_nopolicy.pdf", width = 8, height = 20)
+pdf("economic_res/model_tables_nopolicy.pdf", width = 8, height = 20)
 
 
 for (model_name in names(model_results_nopolicy)) {
@@ -44,7 +44,7 @@ dev.off()
 
 
 
-pdf("model_tables_policy.pdf", width = 8, height = 20)
+pdf("economic_res/model_tables_policy.pdf", width = 8, height = 20)
 
 
 for (model_name in names(model_results_policy)) {

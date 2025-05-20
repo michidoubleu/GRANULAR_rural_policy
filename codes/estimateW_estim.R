@@ -3,6 +3,7 @@ environment(.libPaths)$.lib.loc = c("renv/library/R-4.1/x86_64-w64-mingw32")
 args <- commandArgs(trailingOnly = TRUE)
 JOB <- ifelse(.Platform$GUI == "RStudio",test.scen, as.integer(args[[1]]))
 dir.create("output")
+dir.create("economic_res")
 
 load("input/temp_grid.RData")
 
@@ -16,6 +17,7 @@ library(pracma)
 library(MASS)
 library(sf)
 library(spdep)
+library(scales)
 
 # Use the parameters
 job.params <- param.grid[JOB,]
@@ -55,6 +57,7 @@ res1[["setting"]] <- list(
   Y.spec = job.params$Y.spec,
   model = job.params$model,
   region.spec = job.params$region.spec,
+  add.interaction = job.params$add.interaction,
   add.c.dummies = job.params$add.c.dummies,
   vars.considered = all.vars.considered[[job.params$var.set]],
   dummies.considered = all.dummies.considered[[job.params$dummy.set]]

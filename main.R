@@ -18,8 +18,15 @@ library(openxlsx)
 ##############################################################################################################################
 
 ###### load data.. to be updated to include more policy variables and maybe play around with other variables, check also literature to have most important drivers covered. (accessibility)
-# input.path <- "P:/globiom/Projects/GRANULAR/rural_estim"
-# source("codes/load_data.R")
+
+input.path <- "P:/globiom/Projects/GRANULAR/rural_estim"
+
+if(!dir.exists("renv")){
+  source("codes/S2_setup_renv.R")
+}
+if(length(list.files("input", all.files = TRUE, no.. = TRUE)) == 0){
+  source("codes/load_data.R")
+}
 
 ##############################################################################################################################
 
@@ -31,7 +38,7 @@ library(openxlsx)
 ##############################################################################################################################
 
 CLUSTER <- FALSE
-test.scen <- 7
+test.scen <- 4
 
 ### change to run different variables
 ### clim: "tas_perc", "tasmax_perc", "tasmin_perc", "pr",
@@ -40,8 +47,8 @@ test.scen <- 7
 ### access: "health_2020_n1", "health_2020_n3", "educ_2020_n1"
 
 all.vars.considered <- list(
-  set1=c("pc_gdp", "emp_pc", "gva_B.E", "health_2020_n1", "educ_2020_n1", "initial_pop_log", "pop_dens", "pop_dens_sq"),
-  set2=c("pc_gdp", "emp_pc", "gva_B.E", "health_2020_n1", "educ_2020_n1", "initial_pop_log", "pop_dens", "pop_dens_sq",
+  set1=c("pc_gdp", "emp_pc", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq"),
+  set2=c("pc_gdp", "emp_pc", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq",
          "Pillar II", "ESIF"))
 
 #### east, nordic, MOUNT_TYPE, COAST_TYPE, intermediate, rural, urban
@@ -49,10 +56,10 @@ all.dummies.considered <- list(dummy.set1=c("COAST_TYPE", "predominantly urban",
 
 ### currently only option growth_corr (2021-2011 population minus natural change)
 param.grid <- expand.grid(
-  Y.spec = c("growth_corr", "change_corr"),
+  Y.spec = c("growth_corr"),
   region.spec = c("full"),
   model = c("SAR", "SDM"),
-  add.interaction = c(TRUE),
+  add.interaction = c("full", "none"),
   add.c.dummies = c(FALSE),
   var.set = names(all.vars.considered),
   dummy.set = names(all.dummies.considered),
@@ -81,7 +88,8 @@ if(CLUSTER){
 ################################################## RESULT PROCESSING #########################################################
 ##############################################################################################################################
 
-#source("codes/write_res_latex.R")
+source("codes/summarize_cluster_res.R")
+source("codes/write_resPDF.R")
 
 ##############################################################################################################################
 

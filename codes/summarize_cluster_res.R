@@ -13,7 +13,11 @@ for(scen in A.files){
 
   load(paste0(scen))
 
-  scen.name <- paste0(res1$setting$model,"-",res1$setting$region.spec,"-",res1$setting$Y.spec)
+  scen.name <- paste0(res1$setting$model,"-",
+                      res1$setting$region.spec,"-",
+                      res1$setting$Y.spec,"-",
+                      res1$setting$add.interaction,"-C.dummies:",
+                      res1$setting$add.c.dummies)
 
   temp.res <- list()
   if(res1$model_type!="SLX"){
@@ -33,7 +37,11 @@ for(scen in B.files){
 
   load(paste0(scen))
 
-  scen.name <- paste0(res1$setting$model,"-",res1$setting$region.spec,"-",res1$setting$Y.spec)
+  scen.name <- paste0(res1$setting$model,"-",
+                      res1$setting$region.spec,"-",
+                      res1$setting$Y.spec,"-",
+                      res1$setting$add.interaction,"-C.dummies:",
+                      res1$setting$add.c.dummies)
 
   temp.res <- list()
   if(res1$model_type!="SLX"){
