@@ -1,4 +1,5 @@
 dir.create("output")
+dir.create("input")
 dir.create("overleaf")
 
 ###### dependent variable
