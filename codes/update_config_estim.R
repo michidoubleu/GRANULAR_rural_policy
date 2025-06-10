@@ -19,12 +19,12 @@ config_lines <- gsub(
 # Write the updated config back to the file
 writeLines(config_lines, config_path)
 
-
-# Set the path to the folder
-folder_path <- "output"
-# List all files in the folder
-files_to_delete <- list.files(folder_path, full.names = TRUE)
-# Delete the files
-unlink(files_to_delete)
+# in case i wanna delete output on new run
+# # Set the path to the folder
+# folder_path <- "output"
+# # List all files in the folder
+# files_to_delete <- list.files(folder_path, full.names = TRUE)
+# # Delete the files
+# unlink(files_to_delete)
 
 
