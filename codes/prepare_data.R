@@ -33,6 +33,12 @@ mutate(
   # Pillar II includes various rural development payments
   `Pillar II` = HC + COOP + PC + GRD + FOR + AEP +
     EARLY + N2K + LFA + TA + DIV,
+  `Pillar II env` =  AEP + N2K + LFA ,
+  `Pillar II dev` = HC + COOP + PC + GRD + FOR +
+    EARLY  + TA + DIV,
+
+  `Pillar II env` = ifelse(`Pillar II env`<0,0,`Pillar II env`),
+  `Pillar II dev` = ifelse(`Pillar II dev`<0,0,`Pillar II dev`),
 
   # Total CAP = Pillar I + Pillar II
   CAP = `Pillar I` + `Pillar II`,
@@ -57,7 +63,9 @@ mutate(
   # ---- ESIF FUNDS: Aggregate various ESIF-related payments ----
 mutate(
   ESIF = TransConstr + EnvN2K + BuildConstr + RiskPrev +
-    Brownfield + EnergyConstr
+    Brownfield + EnergyConstr,
+  ESIF_env = EnvN2K  + RiskPrev + Brownfield ,
+  ESIF_cons = TransConstr + BuildConstr + EnergyConstr
 ) %>%
 
   # ---- LOG TRANSFORMATION: CAP, Pillars, and other variables scaled by per capita GDP ----
@@ -68,14 +76,16 @@ mutate(
       "MARKET", "DECOUP", "COUP", "MISC"),
     ~ log((.x + 1) / pc_gdp)
   )
+)%>%
+
+  # ---- LOG TRANSFORMATION: CAP, Pillars, and other variables scaled by per capita GDP ----
+mutate(
+  across(
+    c(starts_with("ESIF")),
+    ~ log((.x + 1) / pc_gdp)
+  )
 ) %>%
 
-  # Log-transform ESIF relative to per capita GDP
-  mutate(
-    ESIF = log((ESIF + 1) / pc_gdp)
-  ) %>%
-
-  # ---- SHARE OF GDP: GVA as share of total GDP ----
 mutate(
   across(
     starts_with("gva"),

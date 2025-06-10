@@ -8,7 +8,7 @@ scen <- files[1]
 A.files <- files[1:(length(files)/2)]
 B.files <- files[((length(files)/2)+1):length(files)]
 
-
+scen <- A.files[1]
 for(scen in A.files){
 
   load(paste0(scen))
@@ -20,7 +20,7 @@ for(scen in A.files){
                       res1$setting$add.c.dummies)
 
   temp.res <- list()
-  if(res1$model_type!="SLX"){
+  if(res1$setting$model!="SLX"){
     temp.res[["Direkt"]] <- as.data.frame(t(round(apply(res1$post.direct,1,quantile,c(0.1,0.5,0.9)),6)))
     temp.res[["Indirekt"]] <- as.data.frame(t(round(apply(res1$post.indirect,1,quantile,c(0.1,0.5,0.9)),6)))
 
@@ -44,7 +44,7 @@ for(scen in B.files){
                       res1$setting$add.c.dummies)
 
   temp.res <- list()
-  if(res1$model_type!="SLX"){
+  if(res1$setting$model!="SLX"){
     temp.res[["Direkt"]] <- as.data.frame(t(round(apply(res1$post.direct,1,quantile,c(0.1,0.5,0.9)),6)))
     temp.res[["Indirekt"]] <- as.data.frame(t(round(apply(res1$post.indirect,1,quantile,c(0.1,0.5,0.9)),6)))
 

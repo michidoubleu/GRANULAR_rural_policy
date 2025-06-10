@@ -37,8 +37,8 @@ if(length(list.files("input", all.files = TRUE, no.. = TRUE)) == 0){
 ################################################# USER SETTINGS PART #########################################################
 ##############################################################################################################################
 
-CLUSTER <- FALSE
-test.scen <- 4
+CLUSTER <- TRUE
+test.scen <- 5
 
 ### change to run different variables
 ### clim: "tas_perc", "tasmax_perc", "tasmin_perc", "pr",
@@ -49,7 +49,9 @@ test.scen <- 4
 all.vars.considered <- list(
   set1=c("pc_gdp", "emp_pc", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq"),
   set2=c("pc_gdp", "emp_pc", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq",
-         "Pillar II", "ESIF"))
+         "Pillar II ", "ESIF"),
+  set3=c("pc_gdp", "emp_pc", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq",
+         "Pillar I","Pillar II env", "Pillar II dev", "ESIF_env", "ESIF_cons"))
 
 #### east, nordic, MOUNT_TYPE, COAST_TYPE, intermediate, rural, urban
 all.dummies.considered <- list(dummy.set1=c("COAST_TYPE", "predominantly urban","predominantly rural", "capital", "STmetro"))
