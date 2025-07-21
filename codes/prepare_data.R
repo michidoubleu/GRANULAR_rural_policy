@@ -182,8 +182,8 @@ if(add.interaction=="policy"){
       Z <- as.matrix(bind_cols(Z,temp.cols))
       }
     }
-    X <- X[,!grepl("Pillar", colnames(X))]
-    X <- X[,!grepl("ESIF", colnames(X))]
+    # X <- X[,!grepl("Pillar", colnames(X))]
+    # X <- X[,!grepl("ESIF", colnames(X))]
   }
 }
 
