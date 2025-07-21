@@ -26,6 +26,8 @@ model <- job.params$model
 add.interaction <- job.params$add.interaction
 region.spec <- job.params$region.spec
 add.c.dummies <- job.params$add.c.dummies
+burn.draws <- job.params$burn.draws
+save.draws <- job.params$save.draws
 # Resolve sets to actual variables
 vars.considered <- all.vars.considered[[job.params$var.set]]
 dummies.considered <- all.dummies.considered[[job.params$dummy.set]]
@@ -41,16 +43,16 @@ coords <- st_coordinates(centroids)
 W<-getWknn(coords,10)
 
 if(model=="SDM"){
-res1 = sdm(Y,tt=1,X = X,Z = Z,W = W)
+res1 = sdm(Y,tt=1,X = X,Z = Z,W = W, niter = save.draws+burn.draws, nretain = save.draws)
 }
 
 if(model=="SLX"){
-  res1 = slx(Y,tt=1,X = X,Z = Z,W = W)
+  res1 = slx(Y,tt=1,X = X,Z = Z,W = W, niter = save.draws+burn.draws, nretain = save.draws)
 }
 
 if(model=="SAR"){
   Z <- as.matrix(bind_cols(X,Z))
-  res1 = sar(Y,tt=1,Z = Z,W = W)
+  res1 = sar(Y,tt=1,Z = Z,W = W, niter = save.draws+burn.draws, nretain = save.draws)
 }
 
 res1[["setting"]] <- list(

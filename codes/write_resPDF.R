@@ -4,7 +4,7 @@ library(ggplot2)
 
 
 
-pdf("economic_res/model_tables_nopolicy.pdf", width = 8, height = 20)
+pdf("economic_res/model_tables_nopolicy.pdf", width = 8, height = 22)
 
 
 for (model_name in names(model_results_nopolicy)) {
@@ -13,7 +13,10 @@ for (model_name in names(model_results_nopolicy)) {
   # Title
   grid.text(paste("Model specification:", model_name),
             gp = gpar(fontsize = 16, fontface = "bold"),
-            y = 0.95)
+            y = 0.98)
+  grid.text(paste("Model specification:", model_name),
+            gp = gpar(fontsize = 16, fontface = "bold"),
+            y = 0.48)
 
   # Create Direkt and Indirekt grobs
   direkt_table <- tableGrob(model_results_nopolicy[[model_name]]$Direkt,
@@ -23,11 +26,11 @@ for (model_name in names(model_results_nopolicy)) {
 
   # Add subtitles
   direkt_grob <- grobTree(
-    textGrob("Direkt", x = 0.5, y = 1, just = "top", gp = gpar(fontsize = 14, fontface = "bold")),
+    textGrob("Direkt", x = 0.5, y = 0.92, just = "top", gp = gpar(fontsize = 14, fontface = "bold")),
     direkt_table
   )
   indirekt_grob <- grobTree(
-    textGrob("Indirekt", x = 0.5, y = 1, just = "top", gp = gpar(fontsize = 14, fontface = "bold")),
+    textGrob("Indirekt", x = 0.5, y = 0.92, just = "top", gp = gpar(fontsize = 14, fontface = "bold")),
     indirekt_table
   )
 
@@ -44,7 +47,7 @@ dev.off()
 
 
 
-pdf("economic_res/model_tables_policy.pdf", width = 8, height = 20)
+pdf("economic_res/model_tables_policy.pdf", width = 8, height = 24)
 
 
 for (model_name in names(model_results_policy)) {
@@ -53,7 +56,10 @@ for (model_name in names(model_results_policy)) {
   # Title
   grid.text(paste("Model specification:", model_name),
             gp = gpar(fontsize = 16, fontface = "bold"),
-            y = 0.95)
+            y = 0.98)
+  grid.text(paste("Model specification:", model_name),
+            gp = gpar(fontsize = 16, fontface = "bold"),
+            y = 0.48)
 
   # Create Direkt and Indirekt grobs
   direkt_table <- tableGrob(model_results_policy[[model_name]]$Direkt,
@@ -63,11 +69,11 @@ for (model_name in names(model_results_policy)) {
 
   # Add subtitles
   direkt_grob <- grobTree(
-    textGrob("Direkt", x = 0.5, y = 1, just = "top", gp = gpar(fontsize = 14, fontface = "bold")),
+    textGrob("Direkt", x = 0.5, y = 0.92, just = "top", gp = gpar(fontsize = 14, fontface = "bold")),
     direkt_table
   )
   indirekt_grob <- grobTree(
-    textGrob("Indirekt", x = 0.5, y = 1, just = "top", gp = gpar(fontsize = 14, fontface = "bold")),
+    textGrob("Indirekt", x = 0.5, y = 0.92, just = "top", gp = gpar(fontsize = 14, fontface = "bold")),
     indirekt_table
   )
 

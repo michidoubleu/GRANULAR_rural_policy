@@ -156,14 +156,34 @@ Z.info <- bind_cols(NUTS_ID=Y.info$NUTS_ID,Z.info)
 
 Z <- Z.info %>% arrange(NUTS_ID) %>% dplyr::select(any_of(dummies.considered)) %>% as.matrix()
 
-if(add.interaction=="simple"){
+# if(add.interaction=="simple"){
+#   jj <- type.cols[1]
+#   if(length(type.cols)>1){
+#     for(jj in type.cols){
+#       temp.cols <- X * pull(Z.info[, jj])
+#       colnames(temp.cols) <- paste0(jj,":",colnames(X))
+#       Z <- as.matrix(bind_cols(Z,temp.cols))
+#       X <- NULL
+#     }
+#   }
+# }w
+
+
+if(add.interaction=="policy"){
   jj <- type.cols[1]
   if(length(type.cols)>1){
     for(jj in type.cols[-1]){
-      temp.cols <- X * pull(Z.info[, jj])
-      colnames(temp.cols) <- paste0(jj,":",colnames(X))
+      Pillar <- X[,grepl("Pillar", colnames(X))]
+      ESIF <- X[,grepl("ESIF", colnames(X))]
+      policy.X <- cbind(Pillar, ESIF)
+      if(ncol(policy.X)!=0){
+      temp.cols <- policy.X * pull(Z.info[, jj])
+      colnames(temp.cols) <- paste0(jj,":",colnames(temp.cols))
       Z <- as.matrix(bind_cols(Z,temp.cols))
+      }
     }
+    X <- X[,!grepl("Pillar", colnames(X))]
+    X <- X[,!grepl("ESIF", colnames(X))]
   }
 }
 

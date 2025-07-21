@@ -38,7 +38,9 @@ if(length(list.files("input", all.files = TRUE, no.. = TRUE)) == 0){
 ##############################################################################################################################
 
 CLUSTER <- TRUE
-test.scen <- 5
+test.scen <- 15
+save.draws <- 1000
+burn.draws <- 500
 
 ### change to run different variables
 ### clim: "tas_perc", "tasmax_perc", "tasmin_perc", "pr",
@@ -47,10 +49,10 @@ test.scen <- 5
 ### access: "health_2020_n1", "health_2020_n3", "educ_2020_n1"
 
 all.vars.considered <- list(
-  set1=c("pc_gdp", "emp_pc", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq"),
-  set2=c("pc_gdp", "emp_pc", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq",
-         "Pillar II ", "ESIF"),
-  set3=c("pc_gdp", "emp_pc", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq",
+  base=c("pc_gdp", "emp_pc", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq"),
+  policy.small=c("pc_gdp", "emp_pc", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq",
+         "Pillar I", "Pillar II", "ESIF"),
+  policy.big=c("pc_gdp", "emp_pc", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq",
          "Pillar I","Pillar II env", "Pillar II dev", "ESIF_env", "ESIF_cons"))
 
 #### east, nordic, MOUNT_TYPE, COAST_TYPE, intermediate, rural, urban
@@ -60,13 +62,15 @@ all.dummies.considered <- list(dummy.set1=c("COAST_TYPE", "predominantly urban",
 param.grid <- expand.grid(
   Y.spec = c("growth_corr"),
   region.spec = c("full"),
-  model = c("SAR", "SDM"),
-  add.interaction = c("full", "none"),
+  add.interaction = c("none", "policy"),
   add.c.dummies = c(FALSE),
   var.set = names(all.vars.considered),
   dummy.set = names(all.dummies.considered),
+  model = c("SAR", "SDM"),
   stringsAsFactors = FALSE
 )
+
+param.grid %>% filter(!(add.interaction=="policy" & var.set=="base"))
 source("codes/update_config_estim.R")
 
 ##############################################################################################################################
@@ -91,7 +95,7 @@ if(CLUSTER){
 ##############################################################################################################################
 
 source("codes/summarize_cluster_res.R")
-source("codes/write_resPDF.R")
+# source("codes/write_resPDF.R")
 
 ##############################################################################################################################
 
