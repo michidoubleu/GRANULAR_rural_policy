@@ -37,7 +37,7 @@ if(length(list.files("input", all.files = TRUE, no.. = TRUE)) == 0){
 ################################################# USER SETTINGS PART #########################################################
 ##############################################################################################################################
 
-CLUSTER <- TRUE
+CLUSTER <- FALSE
 test.scen <- 15
 save.draws <- 1000
 burn.draws <- 500
@@ -70,7 +70,7 @@ param.grid <- expand.grid(
   stringsAsFactors = FALSE
 )
 
-param.grid %>% filter(!(add.interaction=="policy" & var.set=="base"))
+param.grid <- param.grid %>% filter(!(add.interaction=="policy" & var.set=="base"))
 source("codes/update_config_estim.R")
 
 ##############################################################################################################################
