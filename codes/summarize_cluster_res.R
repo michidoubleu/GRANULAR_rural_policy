@@ -9,7 +9,7 @@ scen <- files[1]
 files <- files[1:(length(files))]
 
 
-scen <- files[10]
+scen <- files[22]
 for(scen in files){
 
   load(paste0(scen))
@@ -31,6 +31,8 @@ for(scen in files){
     temp.res[["DirektSD"]] <- as.data.frame(t(round(apply(res1$post.direct,1,sd),6)))
     temp.res[["IndirektSD"]] <- as.data.frame(t(round(apply(res1$post.indirect,1,sd),6)))
 
+    temp.res[["rho"]] <- colMeans(as.data.frame(t(round(res1$postr,6))))
+    temp.res[["sigma2"]] <- colMeans(as.data.frame(t(round(res1$posts,6))))
 
   } else {
     next
