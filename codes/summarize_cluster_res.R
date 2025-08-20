@@ -28,10 +28,14 @@ for(scen in files){
     temp.res[["Direkt"]] <- as.data.frame(t(round(apply(res1$post.direct,1,quantile,c(0.1,0.5,0.9)),6)))
     temp.res[["Indirekt"]] <- as.data.frame(t(round(apply(res1$post.indirect,1,quantile,c(0.1,0.5,0.9)),6)))
 
+    temp.res[["DirektSD"]] <- as.data.frame(t(round(apply(res1$post.direct,1,sd),6)))
+    temp.res[["IndirektSD"]] <- as.data.frame(t(round(apply(res1$post.indirect,1,sd),6)))
+
+
   } else {
     next
   }
   model_results[[scen.name]] <- temp.res
 }
 
-saveRDS(model_results, paste0("./economic_res/model_res_",cluster.run,".rds"))
+saveRDS(model_results, paste0("./economic_res/model_res_",cluster.run,"_includingSD.rds"))
