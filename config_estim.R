@@ -1,6 +1,6 @@
 EXPERIMENT = "GRANULAR_ESTIM" # label for your run, pick something short but descriptive without spaces and valid as part of a filename
 PREFIX = "_condor" # prefix for per-job .err, log, .lst, and .out files
-JOBS = c(1:12)
+JOBS = c(1:10)
 HOST_REGEXP = ".*" # a regular expression to select execute hosts from the cluster
 REQUEST_MEMORY = 10000 # memory (MiB) to reserve for each job
 REQUEST_CPUS = 1 # number of hardware threads to reserve for each job

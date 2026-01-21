@@ -25,14 +25,16 @@ for(scen in files){
 
   temp.res <- list()
   if(res1$setting$model!="SLX"){
-    temp.res[["Direkt"]] <- as.data.frame(t(round(apply(res1$post.direct,1,quantile,c(0.1,0.5,0.9)),6)))
-    temp.res[["Indirekt"]] <- as.data.frame(t(round(apply(res1$post.indirect,1,quantile,c(0.1,0.5,0.9)),6)))
+    temp.res[["Direkt"]] <- rbind(as.data.frame(t(round(apply(res1$post.direct,1,quantile,c(0.01,0.05,0.1,0.5,0.9,0.95,0.99)),6))),rho=quantile(as.numeric(res1$postr,6),c(0.01,0.05,0.1,0.5,0.9,0.95,0.99)),sigma2=quantile(as.numeric(res1$posts,6),c(0.01,0.05,0.1,0.5,0.9,0.95,0.99)))
 
-    temp.res[["DirektSD"]] <- as.data.frame(t(round(apply(res1$post.direct,1,sd),6)))
+    temp.res[["Indirekt"]] <- as.data.frame(t(round(apply(res1$post.indirect,1,quantile,c(0.01,0.05,0.1,0.5,0.9,0.95,0.99)),6)))
+
+    temp.res[["DirektSD"]] <- cbind(as.data.frame(t(round(apply(res1$post.direct,1,sd),6))),rho=sd(as.numeric(t(round(res1$postr,6)))),
+                                    sigma2=sd(as.numeric(t(round(res1$posts,6)))))
     temp.res[["IndirektSD"]] <- as.data.frame(t(round(apply(res1$post.indirect,1,sd),6)))
 
-    temp.res[["rho"]] <- colMeans(as.data.frame(t(round(res1$postr,6))))
-    temp.res[["sigma2"]] <- colMeans(as.data.frame(t(round(res1$posts,6))))
+    temp.res[["Observations"]] <- nrow(res1$Y)
+
 
   } else {
     next

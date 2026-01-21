@@ -37,10 +37,10 @@ if(length(list.files("input", all.files = TRUE, no.. = TRUE)) == 0){
 ################################################# USER SETTINGS PART #########################################################
 ##############################################################################################################################
 
-CLUSTER <- FALSE
-test.scen <- 15
-save.draws <- 1000
-burn.draws <- 500
+CLUSTER <- TRUE
+test.scen <- 3
+save.draws <- 800
+burn.draws <- 200
 
 ### change to run different variables
 ### clim: "tas_perc", "tasmax_perc", "tasmin_perc", "pr",
@@ -49,10 +49,10 @@ burn.draws <- 500
 ### access: "health_2020_n1", "health_2020_n3", "educ_2020_n1"
 
 all.vars.considered <- list(
-  base=c("pc_gdp", "emp_pc", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq"),
-  policy.small=c("pc_gdp", "emp_pc", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq",
+  base=c("pc_gdp", "emp_pc", "gva_A", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq"),
+  policy.small=c("pc_gdp", "emp_pc", "gva_A" , "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq",
          "Pillar I", "Pillar II", "ESIF"),
-  policy.big=c("pc_gdp", "emp_pc", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq",
+  policy.big=c("pc_gdp", "emp_pc", "gva_A", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq",
          "Pillar I","Pillar II env", "Pillar II dev", "ESIF_env", "ESIF_cons"))
 
 #### east, nordic, MOUNT_TYPE, COAST_TYPE, intermediate, rural, urban
@@ -67,6 +67,8 @@ param.grid <- expand.grid(
   var.set = names(all.vars.considered),
   dummy.set = names(all.dummies.considered),
   model = c("SAR", "SDM"),
+  burn.draws = burn.draws,
+  save.draws = save.draws,
   stringsAsFactors = FALSE
 )
 

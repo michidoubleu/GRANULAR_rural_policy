@@ -74,7 +74,7 @@ mutate(
     c("CAP", starts_with("Pillar"), starts_with("garrone_"), "HC", "COOP", "PC",
       "GRD", "FOR", "AEP", "EARLY", "N2K", "LFA", "TA", "DIV",
       "MARKET", "DECOUP", "COUP", "MISC"),
-    ~ log((.x + 1) / pc_gdp)
+    ~ log((.x + 1))#~ log((.x + 1) / pc_gdp)
   )
 )%>%
 
@@ -82,7 +82,7 @@ mutate(
 mutate(
   across(
     c(starts_with("ESIF")),
-    ~ log((.x + 1) / pc_gdp)
+    ~ log((.x + 1))#~ log((.x + 1) / pc_gdp)
   )
 ) %>%
 
@@ -172,7 +172,7 @@ Z <- Z.info %>% arrange(NUTS_ID) %>% dplyr::select(any_of(dummies.considered)) %
 if(add.interaction=="policy"){
   jj <- type.cols[1]
   if(length(type.cols)>1){
-    for(jj in type.cols[-1]){
+    for(jj in type.cols){
       Pillar <- X[,grepl("Pillar", colnames(X))]
       ESIF <- X[,grepl("ESIF", colnames(X))]
       policy.X <- cbind(Pillar, ESIF)
@@ -182,8 +182,8 @@ if(add.interaction=="policy"){
       Z <- as.matrix(bind_cols(Z,temp.cols))
       }
     }
-    # X <- X[,!grepl("Pillar", colnames(X))]
-    # X <- X[,!grepl("ESIF", colnames(X))]
+     X <- X[,!grepl("Pillar", colnames(X))]
+     X <- X[,!grepl("ESIF", colnames(X))]
   }
 }
 
