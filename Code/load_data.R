@@ -175,7 +175,7 @@ metro <- metro %>% mutate(class=ifelse(substr(MREG_CODE,7,7)=="C","capital","STm
 
 
 
-NUTS_shape <- st_read(paste0(input.path,"/input/NUTS/NUTS_RG_20M_2016_3035.shp"))
+NUTS_shape <- st_read(paste0(input.path,"/data/geo/NUTS_RG_20M_2016_3035/NUTS_RG_20M_2016_3035.shp"))
 NUTS_shape <- NUTS_shape %>% filter(NUTS_ID%in%unique(pop$NUTS_ID)) %>% left_join(metro)
 NUTS_shape[is.na(NUTS_shape)] <- 0
 

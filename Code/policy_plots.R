@@ -10,8 +10,8 @@
 # ==============================================================================
 
 # -- File Paths --
-path_nuts0_shp   <- "./data/geo/NUTS_RG_20M_2016_3035/NUTS_RG_20M_2016_3035.shp"
-path_world_shp   <- "./data/geo/ref-countries-2020-20M/CNTR_RG_20M_2020_4326.shp"
+path_nuts0_shp   <- paste0(input.path,"/data/geo/NUTS_RG_20M_2016_3035/NUTS_RG_20M_2016_3035.shp")
+path_world_shp   <- paste0(input.path,"/data/geo/ref-countries-2020-20M/CNTR_RG_20M_2020_4326.shp")
 path_nuts_custom <- "./inputs/final_NUTS.rds"
 path_predictors  <- "./inputs/predictors.rds"
 path_popdata     <- "./inputs/popdata_prepared.rds"
