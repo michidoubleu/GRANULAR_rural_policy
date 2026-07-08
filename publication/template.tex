@@ -1,0 +1,365 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Journal Article
+% LaTeX Template
+% Version 2.0 (February 7, 2023)
+%
+% This template originates from:
+% https://www.LaTeXTemplates.com
+%
+% Author:
+% Vel (vel@latextemplates.com)
+%
+% License:
+% CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/)
+%
+% NOTE: The bibliography needs to be compiled using the biber engine.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[
+	a4paper, % Paper size, use either a4paper or letterpaper
+	10pt, % Default font size, can also use 11pt or 12pt, although this is not recommended
+	%unnumberedsections, % Comment to enable section numbering
+	%twoside, % Two side traditional mode where headers and footers change between odd and even pages, comment this option to make them fixed
+]{LTJournalArticle}
+
+\usepackage{natbib}
+\bibliographystyle{chicago}
+
+\runninghead{} % A shortened article title to appear in the running head, leave this command empty for no running head
+\usepackage{amsmath}
+\footertext{\textit{}}%(2024) 12:533-684} % Text to appear in the footer, leave this command empty for no footer text
+
+\setcounter{page}{1} % The page number of the first page, set this to a higher number if the article is to be part of an issue or larger work
+\usepackage{todonotes}
+\usepackage{natbib}
+\usepackage{adjustbox} % To adjust table width
+\usepackage{booktabs}  % For better table formatting
+\usepackage{float}
+\usepackage[table]{xcolor}
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+%\title{2359 Topics in Macroeconometrics: \\Rural attractiveness in Europe: An econometric analysis of regional determinants} % Article title, use manual lines breaks (\\) to beautify the layout
+
+\title{Rural Population Change in Europe: The Role of Policy, Economic Structure, and Space} % Article title, use manual lines breaks (\\) to beautify the layout 
+
+
+
+% Authors are listed in a comma-separated list with superscript numbers indicating affiliations
+% \thanks{} is used for any text that should be placed in a footnote on the first page, such as the corresponding author's email, journal acceptance dates, a copyright/license notice, keywords, etc
+\author{%
+	Michael Wögerer\textsuperscript{1}\thanks{Corresponding author: \href{mailto:wogerer@iiasa.ac.at}{wogerer@iiasa.ac.at}\\}, 
+    Dejana Golic\textsuperscript{1},
+    Tamas Krisztin\textsuperscript{1}
+}
+
+% Affiliations are output in the \date{} command
+\date{\footnotesize\textsuperscript{\textbf{1}}IIASA, International Institute for Applied Systems Analysis}
+
+% Full-width abstract
+\renewcommand{\maketitlehookd}{%
+\begin{abstract}
+\noindent
+This paper examines the determinants of population change across European NUTS~3 regions over the period 2011--2021, with a particular focus on rural areas. We relate migration-induced population change to regional economic structure, environmental conditions, and policy-related characteristics. To account for spatial interdependencies in migration dynamics, the analysis employs a Bayesian spatial autoregressive (SAR) model. The results indicate that economic structure plays a central role in shaping regional demographic outcomes: regions with a stronger reliance on agriculture tend to experience less favorable population change, while knowledge-intensive activities and proximity to economically dynamic regions are associated with improved attractiveness. Crucially, the spatial autoregressive parameter is positive and significant across specifications, highlighting the importance of spatial spillovers. We further document significant heterogeneity in policy effectiveness. While direct income support and infrastructure investments act as demographic stabilizers in rural areas, environmental schemes exhibit a negative association with population retention. The paper contributes to the applied regional economics literature by providing a fine-grained, spatially explicit assessment of medium-term demographic change across European regions.
+\end{abstract}
+}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+{\let \newpage \relax \maketitle}
+
+%----------------------------------------------------------------------------------------
+%	ARTICLE CONTENTS
+%----------------------------------------------------------------------------------------
+
+\section{Introduction}
+
+Rural depopulation persists as one of the European Union's (EU) most complex challenges . Despite decades of place-based interventions and significant transfers aimed at promoting cohesion, the ``geography of discontent'' has widened \citep{RodriguezPose2018, McCann2019}. Many rural regions continue to experience sustained demographic decline through low fertility, ageing, and selective out-migration of human capital. This persistence raises a fundamental question for applied public economics: Are current rural development policies ineffective, or are they simply overwhelmed by stronger structural forces of agglomeration? Understanding this efficacy is critical, particularly as the EU Common Agricultural Policy (CAP) increasingly pivots toward environmental objectives that may have ambiguous effects on local economic vitality. Indeed, the most recent CAP Strategic Plans (2023--2027) explicitly reinforce this shift, introducing a new ``green'' focus where 32\% of the total budget is dedicated to environmental actions \citep{EC_CAP_2023}.
+
+The economic drivers of this rural exodus are well-established. Structural transformation and mechanization have historically lowered labor demand in primary sectors \citep{Collantes2011}, while agglomeration economies in urban centers generate wage premiums and superior amenity access that reinforce rural-to-urban migration \citep{Glaeser2009, UN2019, montgomery2013cities, lichter2025depopulation}. Environmental stressors, such as climate variability and land degradation, further erode the sustainability of rural livelihoods \citep{Salvati2010}. While public policy cannot fully reverse these secular trends, the EU allocates substantial budget—through Structural Funds and the CAP—specifically to mitigate their socio-economic consequences.
+
+However, the demographic return on this public investment remains unclear. The existing empirical literature remains fragmented: studies often rely on aggregate funding volumes or analyze single policy instruments in isolation. This aggregation masks the heterogeneity of policy mechanisms, as distinct funding streams—such as ``hard'' infrastructure versus ``soft'' human capital investments—often yield divergent regional outcomes \citep{RodriguezPose2004}. For instance, infrastructure investments (which reduce trade costs) likely impact migration decisions differently than direct income support (which creates a welfare floor) or agri-environmental schemes (which may restrict land-use intensity). Indeed, \cite{Camaioni2016} emphasize that dissecting the CAP into such functional categories is a methodological prerequisite for identifying its true territorial impacts. Crucially, there is a scarcity of evidence on whether ``green'' payments—primarily designed for ecological provision—generate co-benefits for rural population retention or potentially crowd out economic activity.
+
+Ultimately, the success of these diverse policy instruments depends on their ability to alter the utility calculation of local residents. The decision to migrate is effectively a choice of ``exit'' over ``voice'' \citep{hirschman1970exit}. However, recent case study evidence suggests that rural decline is not deterministic; strong local agency and bottom-up initiatives can generate a ``voice'' strong enough to retain population even in peripheral regions \citep{Li_Bottom-up_initiatives}. The question remains whether top-down EU cohesion policy provides the necessary resources to empower this local retention, or if it merely subsidizes the status quo.
+
+This paper addresses this gap by estimating the reduced-form impact of distinct EU rural policy instruments on demographic change across European NUTS~3 regions over the 2011–2021 period. Our identification strategy relies on a long-difference cross-sectional design that conditions on initial regional endowments. To mitigate simultaneity bias—where funding is allocated endogenously to struggling regions—we regress decadal population changes on policy exposure measured at the \textit{baseline} of the period. This ensures that our explanatory variables are predetermined relative to the subsequent demographic trajectory. Furthermore, we employ spatial econometric techniques to explicitly model spillover effects, accounting for the fact that a region's attractiveness is partly determined by the development of its neighbors.
+
+Our analysis yields three main insights. First, we document significant heterogeneity in policy effectiveness. Regions with higher initial exposure to "productive" investments (infrastructure) and direct income support experienced significantly more favorable demographic outcomes. Second, we find that environmental payment schemes are not affecting population change. This suggests that while "green" payments may contribute to achieving ecological goals, they do not automatically serve as a demographic stabilizer. Third, we show that these results are robust to a wide array of geographic and institutional controls, supporting the view that policy design matters more than total spending volume.
+
+This study contributes to the applied regional economics literature in three ways. First, we provide granular, EU-wide evidence at the NUTS~3 level, overcoming the aggregation bias present in country-level studies. Second, by unbundling rural support into functional categories, we offer a more nuanced evaluation of the CAP and Cohesion Policy, moving beyond the binary question of whether "funds work." Finally, our findings inform the ongoing policy debate regarding the "Green Deal," highlighting a potential policy trilemma: environmental objectives, agricultural support, and demographic retention may require distinct, rather than bundled, policy instruments.
+
+The remainder of the paper is organized as follows. Section~2 details the data construction and the categorization of policy instruments. Section~3 outlines the spatial econometric strategy and identification assumptions. Section~4 presents the main results and sensitivity analysis. Section~5 discusses the policy implications and concludes.
+
+%-------------------------------------------------------
+
+\section{Data}
+This section details the construction of the dataset used in the empirical analysis. Our primary dependent variable is net migration at the NUTS~3 level, which serves as a proxy for regional attractiveness. We combine this with a rich set of explanatory variables capturing economic conditions, amenity values, and policy exposure. The final dataset constitutes a cross-section of European regions, linking long-term demographic outcomes (2011–2021) to baseline characteristics and funding periods.
+
+\subsection{Regional Typology}
+To characterize the spatial heterogeneity of demographic change, we adopt the European Commission's (EC) harmonized Urban-Rural typology. This classification allows us to test whether policy efficacy varies by the degree of rurality. The EC classifies NUTS~3 regions into three mutually exclusive categories based on grid-cell population density:
+
+\begin{itemize}
+    \item \textbf{Urban Regions:} Predominantly urban areas with high population density (generally $>1,500$ inhabitants/km$^2$) and significant infrastructure density.
+    \item \textbf{Intermediate Regions:} Areas exhibiting mixed characteristics, typically with population densities between 300 and 1,500 inhabitants/km$^2$.
+    \item \textbf{Rural Regions:} Predominantly rural areas characterized by low population density ($<300$ inhabitants/km$^2$), often exhibiting higher dependence on primary sectors and greater distance to metropolitan centers.
+\end{itemize}
+
+Figure \ref{fig:topo} illustrates the spatial distribution of these categories across the EU. In our heterogeneity analysis, we specifically interact policy variables with the classification to isolate policy effects on these territories.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figures/typology.png}
+    \caption{Urban-Rural Typology of European NUTS~3 Regions}
+    \label{fig:topo}
+    \footnotesize{\textit{Source: Eurostat.}}
+\end{figure}
+
+\subsection{Dependent Variable: Net Migration Estimates}
+Our main outcome variable is the net migration rate between 2011 and 2021. Since direct migration flow data is often incomplete at the NUTS~3 level, we derive net migration using the residual approach. We calculate the total population change over the decade and subtract the natural population change (cumulative births minus cumulative deaths) using data from Eurostat. This ensures that the resulting variable captures population shifts driven specifically by mobility rather than fertility or mortality trends. The final variable is expressed as a rate relative to the 2011 baseline population.
+
+To validate this residual approach, we cross-reference our estimates with net migration data from the European Social Survey (ESS). While the ESS has lower spatial coverage, it provides a direct measure of migration. We find a strong correlation between the two measures, confirming that the vital-statistics adjustment effectively isolates the migration component. Consequently, we utilize the residual-based measure for the full sample to maximize geographic coverage.
+
+Figure \ref{fig:density} presents the kernel density estimates of net migration rates across the three regional types. The distributions highlight that rural areas (green distribution) exhibit a mean net migration rate lower than urban and intermediate regions, with a distribution skewed towards negative values.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figures/relative_density_corr.png}
+    \caption{Distribution of Net Migration Rates by Regional Typology}
+    \label{fig:density}
+    \footnotesize{\textit{Notes: Vertical lines indicate the mean net migration rate for each group. Data covers the 2011–2021 period.}}
+\end{figure}
+
+Figure \ref{fig:growth_rates} maps these trends spatially. Panel (A) displays the aggregate growth rates, while Panels (B) masks Urban regions and (C) isolates Rural regions. With a few exceptions, the visual evidence confirms that while depopulation is a pan-European phenomenon, it is spatially clustered in mainly rural peripheries, whereas growth is concentrated in and around urban agglomerations.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\linewidth]{figures/combined_growth_corr.png}
+    \caption{Population Growth Rates by NUTS~3 Region (2011–2021)}
+    \label{fig:growth_rates}
+    \footnotesize{\textit{Notes: Color scale indicates percentage growth (Green = Positive, Red = Negative). Gray areas indicate excluded regions for the respective panel.}}
+\end{figure}
+
+\subsection{Covariates and Policy Variables}
+To isolate the effect of EU policy, we control for a vector of regional characteristics determined at the baseline (circa 2011 or the 2009–2013 average) to mitigate simultaneity bias. Table \ref{tab:variables} summarizes the definitions and data sources for all variables used in the estimation.
+
+We categorize our explanatory variables into three groups. Crucially, strictly positive variables with skewed distributions (GDP, population density, and funding amounts) enter the regression in logarithmic form.
+\begin{enumerate}
+    \item \textbf{Structural Drivers:} Including GDP per capita, employment density, and the industrial share of Gross Value Added (GVA), which capture local labor market conditions.
+    \item \textbf{Amenity \& Geography:} Variables such as proximity to coastlines, service accessibility, and population density. Accessibility is measured using a composite index derived from inverted drive times, where higher values indicate better access.
+    \item \textbf{Policy Instruments:} We distinguish between Pillar I (Direct Payments), Pillar II (Rural Development), and Structural Funds (ESIF). To capture the relative intensity of support, these variables are normalized by regional GDP per capita and log-transformed.
+\end{enumerate}
+
+\begin{table}[H]
+\centering
+\caption{Variable Definitions and Data Sources}
+\label{tab:variables}
+\scriptsize % Slightly smaller font to fit information cleanly
+\renewcommand{\arraystretch}{1.3} 
+\begin{tabular}{p{3.5cm} p{8cm} p{2.5cm}}
+\toprule
+\textbf{Variable} & \textbf{Description} & \textbf{Source} \\ 
+\midrule
+\multicolumn{3}{l}{\textit{\textbf{Demographic \& Geographic Controls}}} \\
+Population (2011, 2021) & Total population derived from 1km grid aggregation (Log). & Eurostat (GISCO) \\
+Population Density & Inhabitants per km\textsuperscript{2} (Log). & Own Calc. \\
+Coastal Region & Dummy: 1 if $\geq$ 50\% of population lives within 50km of coast. & Eurostat \\
+Urban/Rural/Intermediate & Dummies based on EC Urban-Rural typology. & Eurostat \\
+Metro Dummies & Indicators for Capital and Secondary metropolitan regions. & Eurostat \\
+Accessibility Index & Composite index (0--1) of inverted drive times to education and healthcare. High values = Better access. & Eurostat (GISCO) \\
+
+\midrule
+\multicolumn{3}{l}{\textit{\textbf{Economic Controls (Baseline 2009--2013)}}} \\
+GDP per capita & Log Gross Domestic Product per capita (const. 2015 prices). & ARDECO \\
+Employment & Total jobs per capita. & ARDECO \\
+GVA Share (Industry) & Share of Gross Value Added in Sectors B-E relative to total GDP. & ARDECO \\
+
+\midrule
+\multicolumn{3}{l}{\textit{\textbf{Policy Variables of Interest (2009--2013 Average)}}} \\
+\multicolumn{3}{p{14cm}}{\textit{Note: All policy variables enter as Log Funding Intensity: $ \ln(\frac{\text{Amount}}{\text{GDP}_{pc}} + 1) $}} \\
+CAP Pillar I & Intensity of market measures and direct payments. & CATS Database \\
+CAP Pillar II (Env.) & Intensity of env. payments (LFA, Natura 2000, agri-env.). & CATS Database \\
+CAP Pillar II (Dev.) & Intensity of rural dev. payments (modernization, human capital). & CATS Database \\
+ESIF (Environment) & Intensity of structural funds for risk/brownfield projects. & CATS Database \\
+ESIF (Infrastructure) & Intensity of structural funds for transport/energy infra. & CATS Database \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{EU policies to support rural resilience}
+The specific policy instruments analyzed in this study correspond to the major funding streams of the EU Common Agricultural Policy (CAP) and Cohesion Policy. To disentangle their distinct demographic impacts, we aggregate these instruments into five functional categories.
+
+Crucially, rather than using raw monetary amounts—which would largely proxy for regional size—we construct a measure of \textbf{funding intensity}. We normalize total payments by the region's GDP per capita and apply a logarithmic transformation. This approach allows us to interpret the coefficients as the elasticity of migration with respect to the economic weight of the subsidy relative to the local economy.
+
+First, we distinguish between the two pillars of the CAP. \textbf{Pillar I (Direct Payments)} constitutes the largest share of the agricultural budget, providing direct income support to farmers. \textbf{Pillar II (Rural Development)} is split into \textit{environmental schemes} (e.g., LFA, Natura 2000) and \textit{development measures} (e.g., modernization, diversification) designed to structurally adjust the rural economy.
+
+Second, we categorize European Structural and Investment Funds (ESIF) based on their primary objective. \textbf{ESIF Infrastructure} captures investments in physical capital (TEN-T, energy, broadband), while \textbf{ESIF Environment} aggregates funding for risk prevention and brownfield redevelopment.
+
+\subsection{Spatial Distribution of Policy Funding}
+
+Understanding the spatial distribution of policy funding is essential for our identification strategy. If funding were uniformly distributed across regions, it would be impossible to identify its effect on differential demographic outcomes. In practice, the allocation of EU funds follows complex eligibility rules, historical entitlements, and national co-financing decisions, resulting in substantial cross-regional variation in funding intensity. This variation—conditional on the structural controls included in our model—provides the identifying information for our policy coefficients. Figure~\ref{fig:policy_maps} maps the spatial distribution of the five policy categories across the EU.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\linewidth]{figures/policy_intensity_maps.png}
+    \caption{Spatial Distribution of EU Policy Funding Intensities across NUTS~3 Regions (Log Scale)}
+    \label{fig:policy_maps}
+    \footnotesize{\textit{Notes: Values represent log-transformed funding amounts. Higher values (lighter shades) indicate greater funding intensity. Data corresponds to the 2009--2013 average.}}
+\end{figure}
+
+Several geographic patterns are immediately apparent. CAP Pillar~I payments are concentrated in agricultural regions of Southern and Eastern Europe, reflecting both higher farm density and larger average farm payments under the Single Payment Scheme. Environmental payments under Pillar~II exhibit a distinct North-South gradient, with Scandinavian and Alpine regions receiving disproportionately high agri-environmental support due to extensive Less Favoured Area (LFA) designations. ESIF allocations display the clearest East-West divide, consistent with the Convergence Objective that channels structural funds toward regions with GDP below 75\% of the EU average. Notably, ESIF Infrastructure funding is particularly concentrated in the new Member States of Central and Eastern Europe, where transport and energy infrastructure gaps remain most pronounced.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{figures/policy_boxplot_typology.png}
+    \caption{Distribution of Policy Funding Intensity by Regional Typology}
+    \label{fig:policy_box}
+    \footnotesize{\textit{Notes: Boxplots show the interquartile range and median of log-transformed funding intensity. Outliers shown as individual points.}}
+\end{figure}
+
+Figure~\ref{fig:policy_box} further disaggregates the funding distribution by the urban-rural typology. As expected, CAP-related payments (both Pillar~I and Pillar~II) are substantially higher in rural regions, reflecting the agricultural orientation of these funds. In contrast, ESIF funding shows less pronounced differentiation by rurality, although rural regions tend to receive slightly more environmental ESIF funding. The boxplots also reveal considerable within-group heterogeneity, particularly for Pillar~II Development payments in rural areas, suggesting that national implementation choices create large cross-country differences in how rural development funds are targeted. This heterogeneity is a prerequisite for our identification approach: it ensures that the policy variables exhibit sufficient variation to separate their effect from the structural controls.
+
+%------------------------------------------------
+
+
+\section{Methodology}
+
+To identify the determinants of rural demographic change, we model population dynamics across $N$ European NUTS~3 regions as a **spatially interdependent process**. Our empirical strategy relies on a cross-sectional spatial econometric framework that links medium-term population adjustments (2011--2021) to initial regional endowments and policy exposure at the beginning of the period. This long-difference design filters out short-term fluctuations and focuses on structural demographic trends.
+
+Given the high degree of economic integration among European regions, standard OLS estimates would likely suffer from spatial omitted variable bias. We therefore employ a set of Bayesian spatial econometric specifications to explicitly model these interdependencies. We adopt the Spatial Autoregressive (SAR) model as our baseline specification, following standard applications in the regional growth literature \citep{piribauer2016bayesian, cuaresma2016forecasting, krisztin2017determinants}. This specification posits that a region's demographic trajectory is determined not only by its own characteristics but also by the demographic momentum of its neighbors (global spillovers).
+
+\subsection{Econometric Specification}
+
+Let $y_i$ denote the average annual net migration rate in region $i$ over the period 2011--2021. As detailed in the Data section, this is calculated as the total population change corrected for natural increase (births minus deaths). We model the vector of outcomes $\mathbf{y} = (y_1, \dots, y_N)'$ using the following spatial autoregressive specification:
+
+\begin{equation}
+\label{eq:sar_structural}
+\mathbf{y} = \rho \mathbf{W} \mathbf{y} + \mathbf{P} \boldsymbol{\gamma} + \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\varepsilon}, \quad \boldsymbol{\varepsilon} \sim \mathcal{N}(0, \sigma^2 \mathbf{I}_N),
+\end{equation}
+
+where $\mathbf{W}$ is an $N \times N$ spatial weight matrix, and $\rho$ is the spatial autoregressive parameter measuring the strength of cross-regional demographic spillovers.
+
+The matrices $\mathbf{P}$ and $\mathbf{X}$ capture our explanatory variables. $\mathbf{P}$ contains our variables of interest: the intensity of EU policy exposure (Pillar I, Pillar II, and Structural Funds) measured as the annual average over the 2009--2013 programming period. $\mathbf{X}$ is a matrix of regional controls, including initial economic conditions, amenities, and geography, measured at the 2011 baseline. The vectors $\boldsymbol{\gamma}$ and $\boldsymbol{\beta}$ represent the parameters to be estimated.
+
+The identification strategy relies on the temporal lag between the independent and dependent variables. By conditioning on covariates fixed at $t_{2011}$ (or the prior budget cycle), we mitigate simultaneity bias where contemporaneous population decline might trigger immediate compensatory funding. While this reduced-form approach does not equate to a randomized experiment, it provides conditional associations that are robust to reverse causality driven by concurrent shocks.
+
+The reduced form of the model is given by:
+\begin{equation}
+\label{eq:sar_reduced}
+\mathbf{y} = (\mathbf{I}_N - \rho \mathbf{W})^{-1} (\mathbf{P} \boldsymbol{\gamma} + \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\varepsilon}).
+\end{equation}
+Equation \eqref{eq:sar_reduced} highlights the "spatial multiplier" effect: a policy intervention in one region affects the recipient but also propagates through the system via the spatial inverse $(\mathbf{I}_N - \rho \mathbf{W})^{-1}$.
+
+In our baseline specification, $\mathbf{W}$ is defined using a $k$-nearest-neighbor structure ($k=10$) based on Euclidean distance between centroids. The matrix is row-stochastic, such that $\sum_{j} w_{ij} = 1$. This structure assumes that demographic signals are strongest among a region's immediate geographic peers. We test the sensitivity of our results to alternative weight specifications (contiguity, distance decay) and alternative model structures (Spatial Durbin Model) in the robustness section.
+
+\subsection{Bayesian Estimation Strategy}
+
+We estimate Equation \eqref{eq:sar_structural} using Bayesian Markov Chain Monte Carlo (MCMC) methods. The Bayesian approach is particularly advantageous in this context as it provides exact finite-sample inference for the spatial parameter $\rho$ and naturally accommodates parameter uncertainty \citep{lesage2009introduction}.
+
+We employ independent, weakly informative conjugate priors to let the data drive the posterior distribution. For the regression coefficients $\boldsymbol{\theta} = [\boldsymbol{\gamma}', \boldsymbol{\beta}']'$, we assume a multivariate normal prior:
+\begin{equation}
+\boldsymbol{\theta} \sim \mathcal{N}(\mathbf{0}, \mathbf{A}_0),
+\end{equation}
+where $\mathbf{A}_0 = g \mathbf{I}$ with $g$ set to a large value (100) to ensure a diffuse prior. The error variance $\sigma^2$ follows an inverse-gamma distribution:
+\begin{equation}
+\sigma^2 \sim IG(a_0, b_0),
+\end{equation}
+with hyperparameters set to small values ($a_0 = b_0 = 0.01$).
+
+For the spatial dependence parameter $\rho$, we utilize a four-parameter Beta prior, $\rho \sim \mathcal{B}(a, a)$, defined on the feasible interval $(1/\lambda_{\min}, 1)$, where $\lambda_{\min}$ is the minimum eigenvalue of $\mathbf{W}$. We set $a=1.01$, implying a prior that is effectively uniform but penalizes values at the boundaries of the stability region.
+
+\subsection{Posterior Inference}
+
+The model is estimated using a Metropolis-within-Gibbs sampler. Conditional on $\rho$, the parameters $\boldsymbol{\theta}$ and $\sigma^2$ are drawn from their standard conditional normal and inverse-gamma distributions, respectively. The spatial parameter $\rho$ is updated using a Metropolis-Hastings step with a tuned random-walk proposal, as its conditional posterior does not take a standard form.
+
+We generate 10,000 draws from the posterior distribution, discarding the first 2,000 as burn-in to ensure convergence to the stationary distribution. Convergence is monitored via trace plots and the Geweke diagnostic \citep{geweke1991evaluating}. All results reported in the following section represent the posterior means and credible intervals of the remaining 8,000 draws.
+
+\section{Results}
+
+This section presents estimates from the Bayesian spatial autoregressive (SAR) model. Posterior inference is based on 10,000 MCMC draws, with the first 2,000 iterations discarded as burn-in. Convergence diagnostics, including trace plots and the \citealp{geweke1991evaluating} statistic, indicate satisfactory mixing of the sampler.
+
+Table~\ref{tab:sar_main} reports posterior mean estimates for three specifications: (i) a baseline structural model, (ii) a policy-augmented model, and (iii) an interaction model designed to capture the differential impact of policies across the rural-urban continuum.
+
+\subsection{Economic Structure and Regional Drivers}
+
+The results confirm that structural economic composition is the dominant driver of demographic trajectories. Wealth and labor demand act as powerful magnets; the elasticity estimates indicate that increases in \textbf{GDP per capita} and \textbf{Employment rates} are consistently associated with positive net migration.
+
+Conversely, regions locked into traditional primary sectors face a steep demographic penalty. The negative coefficient on the Agriculture GVA share suggests that regions heavily dependent on farming face a structural "demographic tax." Specifically, a 10 percentage point increase in the agricultural share of the local economy is associated with a 3.1 percentage point reduction in population growth relative to the baseline. This magnitude reflects the strong secular trend of labor shedding in the primary sector. Similarly, dependence on Mining and Utilities is associated with a reduction in retention, underscoring the transition challenges in industrial legacy regions.
+
+Geography remains a binding constraint. The Accessibility Index (scaled 0–1) is associated with a 4.6 percentage point difference in growth trajectories between the most remote and the most connected regions, confirming that remoteness is a distinct driver of out-migration. In contrast, Capital and Metro regions enjoy a "metropolitan premium," experiencing growth rates approximately 4.7 percentage points higher than the average region, all else equal.
+
+\include{bigsar}
+
+\subsection{Spatial Spillovers}
+
+Demography is not spatially contained. The spatial autoregressive parameter ρ is estimated at approximately 0.67 across specifications. This indicates a high degree of spatial dependence, implying that roughly two-thirds of the variation in local growth rates is spatially clustered. A region surrounded by growing areas effectively "imports" population stability, while a region surrounded by declining areas faces a cumulative downward pressure that internal policies alone may struggle to reverse.
+
+\subsection{Policy Effectiveness and Rural Heterogeneity}
+
+Model (iii) reveals that policy effectiveness is highly conditional on the regional typology. Aggregating all regions (as in Model ii) masks the specific utility of these funds for rural areas. Note that because policy variables enter as log-transformed intensities, we interpret coefficients as the effect of doubling the funding intensity relative to local GDP.
+
+\textbf{Direct Support as a Rural Stabilizer (Pillar I):} While the average effect of direct payments is modest, the interaction term reveals their critical role in rural areas. For rural regions, a doubling of CAP Pillar I intensity is associated with an approximate 0.44 percentage point increase in population retention. Given that many of these regions face baseline decline, this magnitude suggests that direct income support acts as a vital "welfare floor," effectively acting as a demographic brake against out-migration.
+
+\textbf{Infrastructure vs. Income (ESIF Construction):} \textbf{ESIF Construction} investments are positively associated with rural retention, debunking the "two-way road" fear that infrastructure merely accelerates exit. However, the economic magnitude is small: a doubling of infrastructure funding intensity is associated with only a 0.04 percentage point increase in rural population. Comparing these effects, direct income support (Pillar I) appears to be substantially more effective at retaining rural population in the short-to-medium term than hard infrastructure investment.
+
+\textbf{The "Green" Trade-off (Pillar II & ESIF Environment):} The most striking finding is the tension between environmental goals and demographic retention. In rural areas, a doubling of the intensity of Agri-environmental schemes (Pillar II) is associated with a 0.22 percentage point decrease in population growth. Similarly, ESIF Environment spending is linked to a slight negative trajectory.
+
+This implies a "green gentrification" or "rewilding" effect: policies that incentivize extensive land use or ecological preservation may inadvertently reduce the local labor carrying capacity, accelerating the transition toward a "museumified" countryside with fewer permanent residents.
+
+\textbf{Rural Development (Pillar II Development):} Broad rural development measures (diversification, modernization) show a positive association in Intermediate regions but fail to achieve statistical significance in deep Rural areas. This suggests a threshold effect: diversification policies work best in regions that already possess a minimum density of economic activity, but struggle to spark growth in the most remote peripheries.
+
+
+%------------------------------------------------
+\section{Policy Implications}
+
+The comparison between our average-effects model and the region-specific interaction specifications reveals three critical insights for the post-2027 EU programming period.
+
+\paragraph{The "Green-Demographic" Trade-off:}
+Our results challenge the assumption that the Common Agricultural Policy's (CAP) environmental architecture generates automatic socio-economic co-benefits. While the aggregate model suggests a neutral relationship, the interaction analysis exposes a \textbf{significant negative association} between the intensity of environmental payments (Pillar II Environment) and population retention specifically in rural regions. This implies a tangible policy trade-off: agri-environmental schemes often incentivize extensive land management or conservation practices that are less labor-intensive than traditional production. If the EU prioritizes ecosystem services in deep rural areas, policymakers must anticipate a potential "demographic penalty"—where a doubling of environmental funding intensity correlates with a 0.22 percentage point reduction in growth—and deploy compensatory mechanisms (e.g., eco-tourism or green job creation) to prevent further labor shedding.
+
+\paragraph{Infrastructure as a Foundation, Income Support as a Lifeline:}
+Contrary to the "geography of discontent" narrative, we find that EU infrastructure investments (ESIF Construction) are positively associated with population retention in rural areas. However, the magnitude of this effect is \textbf{an order of magnitude smaller} than the impact of \textbf{Direct Payments (Pillar I)}. Our interaction results show that while income support has no effect on urban demographics, it acts as the primary demographic stabilizer for rural regions. A doubling of direct payment intensity is associated with a 0.44 percentage point increase in retention, compared to just 0.04 percentage points for infrastructure. This suggests that for the immediate future, rural resilience relies heavily on the "social safety net" function of the CAP. Removing or drastically redistributing direct payments without a viable private-sector alternative could trigger an accelerated rural exodus that hard infrastructure improvements alone cannot stem.
+
+\paragraph{The "Development Trap" in Deep Rural Areas:}
+Finally, the heterogeneous impact of "soft" Rural Development measures (Pillar II Development) highlights a spatial mismatch. These funds appear effective in fostering growth in \textbf{Intermediate} regions—where some economic density already exists—but fail to show a significant association in predominantly \textbf{Rural} regions. This points to a threshold effect: diversification policies (human capital, business modernization) may only work once a region has reached a certain level of agglomeration. For deep rural peripheries, current diversification instruments may be insufficient, requiring more aggressive, place-based industrial policies rather than standard rural development items.
+
+\section{Conclusion}
+
+This paper has examined the determinants of rural resilience in Europe by \textbf{estimating a spatial autoregressive model} of migration-induced population change across NUTS~3 regions (2011--2021). By comparing average treatment effects with a region-specific interaction design, we provide granular evidence on the efficacy of EU rural support mechanisms while accounting for the strong spatial interdependence of European territories.
+
+Our results establish a clear hierarchy of drivers. Structural economic transformation remains the dominant force: regions trapped in primary-sector dependence continue to shed population, with a 10 percentage point shift toward agriculture associated with a 3.1 percentage point drop in retention. Crucially, the interaction analysis reveals that the "rural" policy penalty is real. While \textbf{Direct Payments} and \textbf{Infrastructure} investments act as significant stabilizers, effectively slowing the rate of depopulation, the \textbf{Environmental} pillar of the CAP exhibits a negative association with demographic change in rural areas. This confirms that policies maximizing ecological utility may inadvertently constrain local labor demand.
+
+These findings must be interpreted within the limits of our identification strategy. While the use of baseline covariates and spatial filtering mitigates simultaneity bias, the analysis remains a reduced-form assessment of \textbf{spatial associations rather than a structural model of migration decisions}. Furthermore, our focus on net migration captures the \textit{quantity} of human capital flow, but not its \textit{quality} (e.g., the skills composition of migrants).
+
+Nevertheless, the implications for the "Long-Term Vision for Rural Areas" are clear. The current policy mix relies heavily on direct income transfers to maintain rural population density. As the EU transitions toward a greener CAP, there is a risk that shifting funds from income support (Pillar I) to environmental schemes (Pillar II) could accelerate rural depopulation unless explicitly counteracted. Effective intervention requires unbundling the objectives: accepting that environmental goals may require distinct, non-agricultural employment policies to ensure that the "Green Transition" does not become a "Demographic Exit."
+
+%----------------------------------------------------------------------------------------
+%	 REFERENCES
+%----------------------------------------------------------------------------------------
+
+% Output the bibliography
+
+%----------------------------------------------------------------------------------------
+\bibliography{sample.bib}
+\nocite{10.48364/ISIMIP.836809.1}
+
+\clearpage
+
+\section{Appendix}
+
+\begin{equation}
+y = \rho W y + X\beta + Z\kappa + W X \theta + \epsilon,
+\quad \epsilon \sim \mathcal{N}(0,\sigma^2 I_n),
+\end{equation}
+The specification above represents the spatial Durbin model (SDM). We explicitly separate the dummy variables $Z$ from the set of continuous explanatory variables $X$ in order to clarify the structure of the model. In the SDM, the spatial lag operator $W$ is applied only to the continuous variables in $X$, which reflect regionally varying drivers that may exhibit spatial spillovers. In contrast, the dummy variables in $Z$ represent fixed categorical attributes (e.g., regional classifications) that are not spatially lagged. This separation allows for a more transparent presentation of the SDM, ensuring that the interpretation of direct and indirect (spatial spillover) effects is restricted to the continuous drivers while categorical controls remain in their original form. The results in the form of direct and indirect effects as robustness to our baseline SAR results are presented in the Table BELOW
+
+
+\end{document}

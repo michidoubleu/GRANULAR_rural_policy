@@ -1,13 +1,13 @@
 EXPERIMENT = "GRANULAR_ESTIM" # label for your run, pick something short but descriptive without spaces and valid as part of a filename
 PREFIX = "_condor" # prefix for per-job .err, log, .lst, and .out files
-JOBS = c(1:10)
+JOBS = c(1:14)
 HOST_REGEXP = ".*" # a regular expression to select execute hosts from the cluster
 REQUEST_MEMORY = 10000 # memory (MiB) to reserve for each job
 REQUEST_CPUS = 1 # number of hardware threads to reserve for each job
 LAUNCHER = "Rscript" # interpreter with which to launch the script
-SCRIPT = "./codes/estimateW_estim.R"
+SCRIPT = "./Code/estimateW_estim.R"
 ARGUMENTS = "%1" # arguments to the script
-BUNDLE_INCLUDE_DIRS = c("input") # recursive, supports wildcards
+BUNDLE_INCLUDE_DIRS = c("inputs") # recursive, supports wildcards
 BUNDLE_EXCLUDE_DIRS = c("Condor", "output", ".git") # recursive, supports wildcards
 BUNDLE_EXCLUDE_FILES = c("*.log", "*.csv") # supports wildcards
 BUNDLE_ADDITIONAL_FILES = c() # additional files to add to root of bundle, can also use an absolute path for these

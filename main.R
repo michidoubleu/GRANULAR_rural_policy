@@ -1,7 +1,6 @@
 rm(list=ls())
 
 
-
 ##############################################################################################################################
 ################################################## LOAD LIBRARIES ############################################################
 ##############################################################################################################################
@@ -22,10 +21,10 @@ library(openxlsx)
 input.path <- "P:/globiom/Projects/GRANULAR/rural_estim"
 
 if(!dir.exists("renv")){
-  source("codes/S2_setup_renv.R")
+  source("Code/S2_setup_renv.R")
 }
-if(length(list.files("input", all.files = TRUE, no.. = TRUE)) == 0){
-  source("codes/load_data.R")
+if(length(list.files("inputs", all.files = TRUE, no.. = TRUE)) == 0){
+  source("Code/load_data.R")
 }
 
 ##############################################################################################################################
@@ -37,10 +36,10 @@ if(length(list.files("input", all.files = TRUE, no.. = TRUE)) == 0){
 ################################################# USER SETTINGS PART #########################################################
 ##############################################################################################################################
 
-CLUSTER <- TRUE
+CLUSTER <- FALSE
 test.scen <- 3
-save.draws <- 800
-burn.draws <- 200
+save.draws <- 8000
+burn.draws <- 2000
 
 ### change to run different variables
 ### clim: "tas_perc", "tasmax_perc", "tasmin_perc", "pr",
@@ -50,8 +49,8 @@ burn.draws <- 200
 
 all.vars.considered <- list(
   base=c("pc_gdp", "emp_pc", "gva_A", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq"),
-  policy.small=c("pc_gdp", "emp_pc", "gva_A" , "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq",
-         "Pillar I", "Pillar II", "ESIF"),
+ # policy.small=c("pc_gdp", "emp_pc", "gva_A" , "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq",
+  #       "Pillar I", "Pillar II", "ESIF"),
   policy.big=c("pc_gdp", "emp_pc", "gva_A", "gva_B.E", "accessibility", "initial_pop_log", "pop_dens", "pop_dens_sq",
          "Pillar I","Pillar II env", "Pillar II dev", "ESIF_env", "ESIF_cons"))
 
@@ -67,13 +66,20 @@ param.grid <- expand.grid(
   var.set = names(all.vars.considered),
   dummy.set = names(all.dummies.considered),
   model = c("SAR", "SDM"),
+  W.spec = c("knn10", "knn5", "knn15", "contiguity", "dist_decay"),
   burn.draws = burn.draws,
   save.draws = save.draws,
   stringsAsFactors = FALSE
 )
 
+### Filtering rules to keep grid manageable:
+# 1. No policy interactions for the base variable set
 param.grid <- param.grid %>% filter(!(add.interaction=="policy" & var.set=="base"))
-source("codes/update_config_estim.R")
+# 2. Alternative W-specs only with policy.big + no-interaction + no country dummies (robustness)
+param.grid <- param.grid %>% filter(W.spec == "knn10" | (var.set == "policy.big" & add.interaction == "policy" & add.c.dummies == FALSE))
+# 3. Country dummies only with knn10 baseline W (robustness)
+param.grid <- param.grid %>% filter(!add.c.dummies | W.spec == "knn10")
+source("Code/update_config_estim.R")
 
 ##############################################################################################################################
 
@@ -85,7 +91,7 @@ source("codes/update_config_estim.R")
 if(CLUSTER){
   system("run_estim.bat")
 } else {
-  source("codes/estimateW_estim.R")
+  source("Code/estimateW_estim.R")
 }
 
 ##############################################################################################################################
@@ -96,8 +102,12 @@ if(CLUSTER){
 ################################################## RESULT PROCESSING #########################################################
 ##############################################################################################################################
 
-source("codes/summarize_cluster_res.R")
-# source("codes/write_resPDF.R")
+source("Code/summarize_cluster_res.R")
+# source("Code/write_resPDF.R")
+
+source("Code/write_res_latex.R")
+source("Code/policy_plots.R")
+source("Code/income_plots.R")
 
 ##############################################################################################################################
 

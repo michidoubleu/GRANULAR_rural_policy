@@ -1,5 +1,5 @@
 ###### prepare Y
-pop <- readRDS("input/popdata_prepared.rds")
+pop <- readRDS("inputs/popdata_prepared.rds")
 
 Y.info <- pop %>% filter(variable==Y.spec) %>% arrange(NUTS_ID) %>% dplyr::select(NUTS_ID,typ,value) %>% rename("Y"="value")
 Y.info$typ <- as.factor(Y.info$typ)
@@ -19,7 +19,7 @@ for.X <- pop %>% filter(variable=="pop2011", NUTS_ID %in% Y.info$NUTS_ID) %>% ar
 
 
 ###### prepare X & Z
-explain <- readRDS("input/predictors.rds")
+explain <- readRDS("inputs/predictors.rds")
 
 explain <- for.X %>% left_join(explain) %>% arrange(NUTS_ID)
 
@@ -116,7 +116,7 @@ mutate(
 
 
 ###### prepare W
-shape <- readRDS("input/final_NUTS.rds")
+shape <- readRDS("inputs/final_NUTS.rds")
 area.vars <- data.frame(NUTS_ID=shape$NUTS_ID, area=as.numeric(st_area(shape))/10^6)
 explain <- explain %>% left_join(area.vars) %>% mutate(pop_dens=log(initial_pop/area), pop_dens_sq=pop_dens*pop_dens)
 

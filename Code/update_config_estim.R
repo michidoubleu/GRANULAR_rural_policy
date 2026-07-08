@@ -1,7 +1,7 @@
 # Define your config file path
 config_path <- "config_estim.R"
 
-save(param.grid,all.vars.considered,all.dummies.considered, file = "input/temp_grid.RData")
+save(param.grid,all.vars.considered,all.dummies.considered, file = "inputs/temp_grid.RData")
 
 # Define the current list of jobs
 current_jobs <- 1:nrow(param.grid)

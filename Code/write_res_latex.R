@@ -5,8 +5,8 @@ library(xtable)
 
 results <- readRDS("./economic_res/model_res_3292_includingSD.rds")
 digits_in_res <- 4
-source("codes/results_processing.R")
-source("codes/write_latextable.R")
+source("Code/results_processing.R")
+source("Code/write_latextable.R")
 
 
 
@@ -52,7 +52,7 @@ variable_mapping <- c(
 big.sar$coef <- variable_mapping[big.sar$coef]
 
 # Example usage
-plot.tex(big.sar, "bigsar.tex", caption="Table1", label="tab:sar_main")
+plot.tex(big.sar, "tables/bigsar.tex", caption="Table1", label="tab:sar_main")
 
 
 

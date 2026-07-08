@@ -19,9 +19,14 @@ for(scen in files){
     set.name <- "policySMALL"
   }else { set.name <- "Base" }
 
+  W.label <- ifelse(is.null(res1$setting$W.spec), "knn10", res1$setting$W.spec)
+  cd.label <- ifelse(!is.null(res1$setting$add.c.dummies) && res1$setting$add.c.dummies, "cFE", "noCFE")
+
   scen.name <- paste0(res1$setting$model,"-",
                       res1$setting$add.interaction,"-",
-                      set.name)
+                      set.name,"-",
+                      W.label,"-",
+                      cd.label)
 
   temp.res <- list()
   if(res1$setting$model!="SLX"){

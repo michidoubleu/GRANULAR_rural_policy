@@ -33,7 +33,7 @@ pop$change_corr <- pop$pop2021.corr-pop$pop2011
 
 ### migration
 
-mig <- read.csv(paste0(input.path,"./input/nuts3_migration_2016.csv"))
+mig <- read.csv(paste0(input.path,"./inputs/nuts3_migration_2016.csv"))
 mig <- mig %>% pivot_longer(cols = -NUTS_ID, names_to = "year", values_to = "value")
 mig <- mig %>% group_by(NUTS_ID) %>% summarise(avg.mig=mean(value, na.rm = T))
 
@@ -45,7 +45,7 @@ pop <- pop %>% pivot_longer(cols = -c(NUTS_ID, typ), names_to = "variable", valu
 
 represented.nuts <- unique(pop$NUTS_ID)
 
-saveRDS(pop, file="input/popdata_prepared.rds")
+saveRDS(pop, file="inputs/popdata_prepared.rds")
 
 
 
@@ -165,7 +165,7 @@ CAP <- CAP %>% filter(geo %in%represented.nuts) %>%
 final <- econ %>% left_join(clim.fin) %>% left_join(rents)  %>% left_join(access) %>% left_join(emp) %>% left_join(esif) %>% left_join(CAP)
 final[is.na(final)] <- 0
 
-saveRDS(final, file="input/predictors.rds")
+saveRDS(final, file="inputs/predictors.rds")
 
 
 
@@ -179,6 +179,6 @@ NUTS_shape <- st_read(paste0(input.path,"/input/NUTS/NUTS_RG_20M_2016_3035.shp")
 NUTS_shape <- NUTS_shape %>% filter(NUTS_ID%in%unique(pop$NUTS_ID)) %>% left_join(metro)
 NUTS_shape[is.na(NUTS_shape)] <- 0
 
-saveRDS(NUTS_shape, file="input/final_NUTS.rds")
+saveRDS(NUTS_shape, file="inputs/final_NUTS.rds")
 
 

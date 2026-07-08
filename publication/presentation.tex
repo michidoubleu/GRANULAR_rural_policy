@@ -1,0 +1,296 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{adjustbox}
+\usepackage{natbib}
+\bibliographystyle{chicago}
+
+% Title context
+\title[Rural Population Change]{Rural Population Change in Europe}
+\subtitle{The Role of Policy, Economic Structure, and Space}
+\author[W\"ogerer, Golic, Krisztin]{Michael W\"ogerer \and Dejana Golic \and Tamas Krisztin}
+\institute[IIASA]{International Institute for Applied Systems Analysis (IIASA)}
+\date{\today}
+
+\begin{document}
+
+% Title Slide
+\begin{frame}
+    \titlepage
+\end{frame}
+
+% Part 1: Introduction and Literature
+\begin{frame}{Introduction: The Rural Policy Challenge}
+    \textbf{Background \& Motivation:}
+    \begin{itemize}
+        \item Rural depopulation persists despite decades of place-based EU interventions, contributing to a widening ``geography of discontent'' \citep{RodriguezPose2018, McCann2019}. \pause
+        \item Drivers of the rural exodus are well-documented: mechanization lowering primary sector labor demand \citep{Collantes2011} and urban agglomeration economies \citep{Glaeser2009, lichter2025depopulation}. \pause
+    \end{itemize}
+    \vspace{0.3cm}
+    \textbf{Research Gap:}
+    \begin{itemize}
+        \item The demographic return on EU public investment remains unclear. Aggregating distinct funding streams masks heterogeneous regional outcomes \citep{RodriguezPose2004}. \pause
+        \item It remains empirically untested whether the CAP ``Green Deal'' pivot generates co-benefits for population retention or inadvertently crowds out economic activity.
+    \end{itemize}
+\end{frame}
+
+% Part 2: Data and Stylized Facts
+\begin{frame}{Defining the Dependent Variable}
+    \textbf{Outcome Measure: Net Migration Rate (2011--2021)}
+    \vspace{0.3cm}
+    \begin{itemize}
+        \item Direct migration flow data is often incomplete at the granular (NUTS~3) level.\pause
+        \item We therefore derive net migration using the \textbf{residual approach}:\pause
+        \begin{itemize}
+            \item Calculate total population change over the decade.
+            \item Subtract \textit{natural} population change (cumulative births minus deaths).
+        \end{itemize}\pause
+        \item The final variable is expressed as a rate relative to the 2011 baseline population.
+        \item \textit{Advantage:} This strictly isolates mobility-driven shifts from fertility/mortality trends.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Stylized Facts: Spatial Clustering of Population Change}
+    \centering
+    \includegraphics[height=0.85\textheight]{figures/combined_growth_corr.png}
+\end{frame}
+
+\begin{frame}{Stylized Facts: Depopulation by Regional Typology}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{figures/relative_density_corr.png}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \textbf{Key Observations:}
+            \begin{itemize}
+                \item Depopulation is predominantly a rural phenomenon, with the rural density distribution (green) shifted substantially to the left.
+                \item Population stability and growth are concentrated within urban and intermediate regions.
+                \item This strong spatial clustering inherently motivates the subsequent use of spatial econometric modeling.
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+% Part 3: Policy Classification & Estimation
+\begin{frame}{Data Overview: Regional Drivers of Population Change}
+    To isolate policy effects, we control for baseline regional endowments (circa 2011 / 2009--2013 average) to mitigate simultaneity bias.
+    \vspace{0.3cm}
+    \begin{columns}[T]
+        \begin{column}{0.5\textwidth}
+            \textbf{Structural Economic Drivers:}
+            \begin{itemize}
+                \item GDP per capita (constant prices).
+                \item Employment (jobs per capita).
+                \item GVA Shares (Agriculture, Mining/Utilities) to capture structural transformation.
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \textbf{Amenity \& Geography:}
+            \begin{itemize}
+                \item Accessibility Index (inverted drive times to education/health).
+                \item Population Density (and squared term).
+                \item Fixed effects: Coastal, Capital, and Metro typologies.
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Breaking Down the EU Budget}
+    To understand policy impacts, we must unbundle aggregate funds into their functional mechanisms:
+    \vspace{0.5cm}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{CAP (Common Agricultural Policy)}
+            \begin{itemize}
+                \item \textit{Pillar I:} Direct income support (Welfare floor).
+                \item \textit{Pillar II (Development):} Modernization, diversification.
+                \item \textit{Pillar II (Environment):} Agri-environmental schemes (Natura 2000).
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \textbf{ESIF (Structural Funds)}
+            \begin{itemize}
+                \item \textit{Construction:} Hard infrastructure (TEN-T, transport).
+                \item \textit{Environment:} Risk prevention, brownfield redevelopment.
+            \end{itemize}
+        \end{column}
+    \end{columns}
+    \vspace{0.5cm}
+    \textit{Note: All policies measured as intensity (Log Amount / GDP per capita) to capture relative economic importance.}
+\end{frame}
+
+% Part 3: The Methodological Engine
+\begin{frame}{The Spatial Autoregressive (SAR) Approach}
+    \textbf{Why not OLS?} Demography is not spatially contained. A region imports/exports population stability from neighbors.
+    
+    \vspace{0.3cm}
+    \textbf{Structural Model:}
+    \begin{equation}
+    \mathbf{y} = \rho \mathbf{W} \mathbf{y} + \mathbf{P} \boldsymbol{\gamma} + \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\varepsilon}, \quad \boldsymbol{\varepsilon} \sim \mathcal{N}(0, \sigma^2 \mathbf{I}_N)
+    \end{equation}
+
+    {\footnotesize
+    \begin{itemize}
+        \item \textbf{$\mathbf{y}$}: Vector of average annual net migration rates (2011--2021).\pause
+        \item \textbf{$\rho$}: Spatial autoregressive parameter capturing cross-regional spillovers.
+        \item \textbf{$\mathbf{W}$}: Row-stochastic $k$-nearest-neighbor spatial weights matrix ($k=10$).\pause
+        \item \textbf{$\mathbf{P}$ \text{and} $\boldsymbol{\gamma}$}: Matrix of EU policy exposure intensities (CAP, ESIF) and their estimated effects.\pause
+        \item \textbf{$\mathbf{X}$ \text{and} $\boldsymbol{\beta}$}: Matrix of baseline economic covariates and their estimated effects.\pause
+        \item \textbf{$\boldsymbol{\varepsilon}$}: Normally distributed error term.
+    \end{itemize}
+    
+    \vspace{0.3cm}
+    \textbf{Note:} Estimation is carried out via \textbf{Bayesian MCMC} to naturally accommodate spatial parameter and coefficient uncertainty simultaneously.
+    }
+\end{frame}
+
+\begin{frame}{Dealing with Endogeneity}
+    \textbf{The problem:} Struggling regions receive more compensatory funding (simultaneity bias).\pause
+    \vspace{0.5cm}
+    
+    \textbf{Our Long-Difference Design:}
+    \begin{itemize}
+        \item Regress decadal population change (2011--2021)...
+        \item ...on policy exposure and covariates measured at the \textbf{baseline} (2011 / 2009--2013 average).
+        \item Ensures explanatory variables are predetermined relative to the subsequent demographic trajectory.
+    \end{itemize}
+\end{frame}
+
+% Part 4: Core Findings & Regression Results
+\begin{frame}{Regression Strategy: Three Nested Models}
+    To isolate the differential impacts of policy across regional typologies, we estimate three nested specifications:\pause
+    \begin{itemize}
+        \item \textbf{Model (i) - Base Model:} Controls for structural, demographic, and geographic drivers to establish the baseline determinants of population change.\pause
+        \item \textbf{Model (ii) - Policy Average Effects:} Introduces aggregated CAP and ESIF funding intensities to measure average EU-wide policy efficacy.\pause
+        \item \textbf{Model (iii) - Typology Interactions:} Interacts policy intensities with regional typologies (Urban, Intermediate, Rural) to uncover spatial heterogeneity in policy impact.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Results: Structural Covariates \& Spatial Spillovers}
+    % Shows the variables that remain robust across all three specifications
+    \small
+    \input{bigsar_structural.tex}
+\end{frame}
+
+\begin{frame}[shrink=20]{Results: Policy Drivers \& Regional Interactions}
+    % Shows the policy blocks
+    \footnotesize
+    \input{bigsar_policy.tex}
+\end{frame}
+
+\begin{frame}{Core Finding 1: Structural Destiny \& Spillovers}
+    % SPEAKING NOTE: "Agriculture GVA" is not monolithic. Intensive agriculture (e.g., horticulture) might attract labor, 
+    % while mechanized arable farming drives the "demographic tax" through labor shedding.
+    \begin{itemize}
+        \item \textbf{The Demographic Tax of Agriculture:} A 10 percentage point increase in agricultural GVA share is associated with a 3.1 percentage point reduction in population growth. \pause
+        \item \textbf{The Metropolitan Premium:} Capital and metro regions enjoy huge baseline advantages.
+        % SPEAKING NOTE: Explicitly mention that because we control for accessibility and proximity to metros, 
+        % our policy interaction terms in the next slide isolate the effect on 'deep' rural areas, not just commuting zones.
+        \pause
+        \item \textbf{Massive Spatial Spillovers:} $\rho \approx 0.67$. Two-thirds of variation in local growth rates is spatially clustered.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Core Finding 2: The ``Green-Demographic'' Trade-off}
+    Looking specifically at the interaction model for Rural regions:
+    \vspace{0.3cm}
+    % SPEAKING NOTE: Explain the "Lifeline" mechanism. Even though Pillar I goes to farmers (often large landowners), 
+    % it subsidizes local rural consumption and sustains local services, acting as a regional macroeconomic stabilizer.
+    \begin{block}{Pillar I: The Lifeline}
+        Direct income support (Pillar I) acts as a vital demographic stabilizer for rural areas, vastly outperforming ESIF hard infrastructure.
+    \end{block}
+    \vspace{0.2cm}\pause
+    % SPEAKING NOTE: Address the "Green Trade-off". Explain that Agri-environmental schemes often require 
+    % de-intensification or land abandonment (rewilding). This reduces the carrying capacity for traditional 
+    % agricultural labor faster than alternative 'green' jobs can replace them.
+    \begin{block}{Pillar II Environment: The Provocation}
+        \textbf{Significant negative association} between Agri-environmental schemes and rural population retention. 
+    \end{block}
+    \vspace{0.2cm}
+    \textit{Insight:} Maximizing ecological utility (re-wilding, extensive farming) may inadvertently hollow out rural labor demand, accelerating the rural exodus.
+\end{frame}
+
+% Part 5: Conclusion
+\begin{frame}{Conclusion and Policy Implications}
+    \textbf{The Policy Trilemma:}
+    \begin{itemize}
+        \item It is exceedingly difficult to simultaneously achieve:
+        \begin{enumerate}
+            \item Rural population retention
+            \item Agricultural modernization
+            \item Aggressive environmental conservation (Green Deal)
+        \end{enumerate}
+    \end{itemize}
+    \vspace{0.5cm}
+    \textbf{Takeaway:}
+    As the EU pivots towards a ``green'' CAP, stripping direct income support (Pillar I) to fund environmental schemes (Pillar II) without providing alternative non-agricultural employment will likely accelerate rural depopulation.
+\end{frame}
+
+\begin{frame}{Limitations and Future Research}
+    \begin{itemize}
+        % SPEAKING NOTE: Address Identification. Framing it as conditional spatial associations vs. a perfect experiment.
+        \item \textbf{Identification Strategy:} While the baseline-lagged, long-difference approach mitigates simultaneity, it yields conditional spatial associations rather than a fully structural model of migration.\pause
+        % SPEAKING NOTE: Address Migration Quality vs Quantity. Acknowledge that net migration captures numbers but not age distribution or human capital quality.
+        \item \textbf{Migration Quality vs. Quantity:} Our dependent variable ($growth\_corr$) is aggregate net migration. It captures raw numbers but does not untangle the demographic composition (e.g., retaining retirees vs. losing young, skilled labor).\pause
+        \item \textbf{Future Directions:} Structural modeling is needed to determine if ``Green'' CAP payments differentially affect the retention of youth versus older populations.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \centering
+    \Huge
+    Thank You! \\
+    \vspace{0.5cm}
+    \Large
+    Questions?
+\end{frame}
+
+\begin{frame}[allowframebreaks]{References}
+\scriptsize
+\begin{thebibliography}{99}
+
+\bibitem[Camaioni et al.(2016)]{Camaioni2016}
+Camaioni, B., Esposti, R., Lobianco, A., Pagliacci, F., and Sotte, F. (2016).
+The CAP Vademecum: Abstracting the European agricultural policy.
+\textit{Agecon Search}.
+
+\bibitem[Collantes and Pinilla(2011)]{Collantes2011}
+Collantes, F., and Pinilla, V. (2011).
+\textit{Peaceful surrender: The depopulation of rural Spain in the twentieth century}.
+Cambridge Scholars Publishing.
+
+\bibitem[Glaeser and Gottlieb(2009)]{Glaeser2009}
+Glaeser, E. L., and Gottlieb, J. D. (2009).
+The wealth of cities: Agglomeration economies and spatial equilibrium in the United States.
+\textit{Journal of Economic Literature}, 47(4), 983--1028.
+
+\bibitem[Lichter and Johnson(2025)]{lichter2025depopulation}
+Lichter, D. T., and Johnson, K. M. (2025).
+Depopulation, Deaths, Diversity, and Deprivation: The 4Ds of Rural Population Change.
+\textit{RSF: The Russell Sage Foundation Journal of the Social Sciences}, 11(2), 88--114.
+
+\bibitem[McCann(2020)]{McCann2019}
+McCann, P. (2020).
+Perceptions of regional inequality and the geography of discontent: insights from the UK.
+\textit{Regional Studies}, 54(2), 256--267.
+
+\bibitem[Rodr\'{\i}guez-Pose(2018)]{RodriguezPose2018}
+Rodr\'{\i}guez-Pose, A. (2018).
+The revenge of the places that don't matter (and what to do about it).
+\textit{Cambridge Journal of Regions, Economy and Society}, 11(1), 189--209.
+
+\bibitem[Rodr\'{\i}guez-Pose and Fratesi(2004)]{RodriguezPose2004}
+Rodr\'{\i}guez-Pose, A., and Fratesi, U. (2004).
+Between development and social policies: the impact of European Structural Funds in Objective 1 regions.
+\textit{Regional Studies}, 38(1), 97--113.
+
+\end{thebibliography}
+\end{frame}
+
+\end{document}
