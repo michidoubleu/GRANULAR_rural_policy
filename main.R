@@ -108,6 +108,9 @@ source("Code/summarize_cluster_res.R")
 source("Code/write_res_latex.R")
 source("Code/policy_plots.R")
 source("Code/income_plots.R")
+source("Code/Figure1_typology_map.R")
+source("Code/Figure2_density_growth_corr.R")
+source("Code/Figure3_growth_maps.R")
 
 ##############################################################################################################################
 

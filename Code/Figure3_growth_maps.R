@@ -26,10 +26,10 @@ library(dplyr)     # data manipulation
 library(patchwork) # plot composition
 
 # ---- Load prepared population data ----
-pop <- readRDS("output/popdata_prepared.rds")
+pop <- readRDS("inputs/popdata_prepared.rds")
 
 # ---- Load and filter NUTS3 shapefile ----
-nuts <- st_read("input/NUTS_RG_20M_2016_3035.shp", quiet = TRUE) %>%
+nuts <- readRDS("inputs/final_NUTS.rds") %>%
   filter(NUTS_ID %in% unique(pop$NUTS_ID))
 
 # ---- Select variable to be plotted ----

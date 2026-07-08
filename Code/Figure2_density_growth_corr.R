@@ -21,7 +21,7 @@ library(ggplot2)  # plotting
 library(dplyr)    # data manipulation
 
 # ---- Load prepared population data ----
-pop <- readRDS("output/popdata_prepared.rds")
+pop <- readRDS("inputs/popdata_prepared.rds")
 
 # ---- Compute mean population change per typology ----
 means <- pop %>%
