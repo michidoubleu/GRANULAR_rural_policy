@@ -102,6 +102,11 @@ Horizon Europe research and innovation programme under grant agreement No. 10106
 methodological infrastructure were also supported by the LAMASUS project (Horizon Europe, grant
 agreement No. 101060423).
 
+## Licence
+
+The code is released under the MIT licence (see `LICENSE`). The licence covers the code only, not the
+raw data, which remain subject to the terms of their providers.
+
 ## Contact
 
 Michael Wögerer, IIASA, wogerer@iiasa.ac.at
