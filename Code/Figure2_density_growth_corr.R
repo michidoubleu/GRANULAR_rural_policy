@@ -35,19 +35,21 @@ means <- pop %>%
 # ---- Create density plot ----
 p <- ggplot(
   pop %>% filter(variable == "growth_corr"),
-  aes(x = value, fill = Typology, color = Typology)
+  aes(x = value, fill = Typology, color = Typology, linetype = Typology)
 ) +
-  geom_density(alpha = 0.5) +
+  # typology is encoded by fill lightness, outline colour AND line type, so the
+  # distributions and their means stay distinguishable in black and white
+  geom_density(alpha = 0.45, linewidth = 0.8) +
   geom_vline(
     data = means,
-    aes(xintercept = mean_value, color = Typology),
-    linetype = "dashed",
-    linewidth = 1
+    aes(xintercept = mean_value, color = Typology, linetype = Typology),
+    linewidth = 1,
+    show.legend = FALSE
   ) +
   geom_vline(
     xintercept = 0,
     color = "black",
-    linewidth = 0.7
+    linewidth = 0.5
   ) +
   scale_x_continuous(
     "Population change (births & deaths corrected), 2011–2021 (share of 2011 population)",
@@ -55,11 +57,13 @@ p <- ggplot(
   ) +
   scale_y_continuous("Density") +
   scale_fill_manual(values = TYPO_COLS) +
-  scale_color_manual(values = TYPO_COLS) +
+  scale_color_manual(values = TYPO_LINE) +
+  scale_linetype_manual(values = TYPO_LTY) +
   theme_minimal() +
   theme(
     legend.position = "bottom",
-    legend.title = element_blank()
+    legend.title = element_blank(),
+    legend.key.width = unit(1.4, "cm")
   )
 
 # ---- Save figure to disk ----

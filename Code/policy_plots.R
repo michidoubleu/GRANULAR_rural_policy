@@ -135,7 +135,7 @@ plot_policy_map <- function(spatial_data, world_bg, nuts0, extent) {
 
   ggplot() +
     # World background
-    geom_sf(data = world_bg, fill = "lightgrey", colour = NA) +
+    geom_sf(data = world_bg, fill = BG_FILL, colour = BG_BORDER, lwd = 0.1) +
 
     # NUTS 3 policy intensity
     geom_sf(
@@ -213,11 +213,20 @@ plot_policy_boxplot <- function(box_data) {
 
   ggplot(box_data, aes(x = Typology, y = Intensity, fill = Typology)) +
     geom_boxplot(
+      colour = "grey15",
       outlier.size = 0.5,
       outlier.alpha = 0.4,
-      alpha = 0.85,
-      width = 0.7
+      width = 0.7,
+      median.colour = NA
     ) +
+    # median drawn separately: white on the dark (urban) box, black otherwise
+    stat_summary(
+      aes(colour = Typology),
+      fun = median, fun.min = median, fun.max = median,
+      geom = "crossbar", width = 0.7, linewidth = 0.6
+    ) +
+    scale_colour_manual(values = c(Urban = "white", Intermediate = "black", Rural = "black"),
+                        guide = "none") +
     facet_wrap(~Policy, scales = "free_y", ncol = 5) +
     scale_fill_manual(
       values = TYPO_COLS
